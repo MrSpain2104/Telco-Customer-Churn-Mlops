@@ -1,0 +1,56 @@
+# Book settings
+title: "Telco Customer Churn - MLOps Project"
+author: "Omar Medina & Andrés España"
+logo: ""
+copyright: "2025"
+
+# Force re-execution of notebooks on each build.
+# See https://jupyterbook.org/content/execute.html
+execute:
+  execute_notebooks: off  # No re-ejecutar notebooks (ya están completados)
+  timeout: 120
+  allow_errors: false
+
+# Define the name of the latex output file for PDF builds
+latex:
+  latex_documents:
+    targetname: book.tex
+
+# Add a bibtex file so that we can create citations
+bibtex_bibfiles:
+  - references.bib
+
+# Information about where the book exists on the web
+repository:
+  url: https://github.com/MrSpain2104/Telco-Customer-Churn-Mlops
+  path_to_book: jupyter-book
+  branch: main
+
+# Add GitHub buttons to your book
+html:
+  favicon: ""
+  use_edit_page_button: false
+  use_repository_button: true
+  use_issues_button: true
+  baseurl: https://mrspain2104.github.io/Telco-Customer-Churn-Mlops/
+  google_analytics_id: ""
+  comments:
+    hypothesis: false
+    utterances: false
+
+# Launch button settings
+launch_buttons:
+  notebook_interface: "jupyterlab"
+  binderhub_url: ""
+  colab_url: ""
+
+# Sphinx configuration
+sphinx:
+  config:
+    html_theme: sphinx_book_theme
+    html_theme_options:
+      repository_url: https://github.com/MrSpain2104/Telco-Customer-Churn-Mlops
+      use_repository_button: true
+      use_issues_button: true
+      use_download_button: true
+    language: es

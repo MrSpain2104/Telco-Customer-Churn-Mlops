@@ -1,0 +1,31 @@
+Feature,Importance
+num__TotalCharges,1015
+num__MonthlyCharges,955
+num__tenure,796
+cat__PaymentMethod_Electronic check,342
+cat__PaperlessBilling_Yes,220
+cat__Contract_Two year,190
+cat__InternetService_Fiber optic,186
+cat__OnlineSecurity_Yes,186
+cat__StreamingMovies_Yes,184
+cat__Contract_One year,155
+cat__gender_Male,153
+cat__InternetService_No,147
+num__SeniorCitizen,147
+cat__OnlineBackup_Yes,135
+cat__MultipleLines_Yes,121
+cat__TechSupport_Yes,114
+cat__Dependents_Yes,96
+cat__StreamingTV_Yes,76
+cat__PhoneService_Yes,72
+cat__Partner_Yes,45
+cat__PaymentMethod_Mailed check,31
+cat__PaymentMethod_Credit card (automatic),23
+cat__OnlineSecurity_No internet service,20
+cat__DeviceProtection_Yes,18
+cat__MultipleLines_No phone service,14
+cat__OnlineBackup_No internet service,1
+cat__StreamingTV_No internet service,0
+cat__TechSupport_No internet service,0
+cat__DeviceProtection_No internet service,0
+cat__StreamingMovies_No internet service,0

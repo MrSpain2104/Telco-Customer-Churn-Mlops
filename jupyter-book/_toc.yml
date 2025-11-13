@@ -1,0 +1,14 @@
+# Table of contents
+# Learn more at https://jupyterbook.org/customize/toc.html
+
+format: jb-book
+root: intro
+title: Inicio
+
+chapters:
+  - file: notebooks/1_eda_preprocessing
+    title: "1. Análisis Exploratorio y Preprocesamiento"
+  - file: notebooks/2_model_training
+    title: "2. Entrenamiento de Modelos"
+  - file: notebooks/3_interpretability
+    title: "3. Interpretabilidad con LIME"
