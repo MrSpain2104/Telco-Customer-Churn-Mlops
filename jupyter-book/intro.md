@@ -12,8 +12,8 @@
 ### Equipo de Desarrollo
 
 **Integrantes:**
-- **Omar Medina** - Análisis y Modelado
-- **Andrés España** - MLOps e Implementación
+- **Omar Medina**
+- **Andrés España**
 
 ---
 
