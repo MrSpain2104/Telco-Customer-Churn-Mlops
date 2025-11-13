@@ -352,19 +352,26 @@ Para usar el pipeline en tu repositorio:
 
 ---
 
-## � Documentación
+## 📖 Documentación
 
-La documentación completa del proyecto está empaquetada como un Jupyter Book.
+La documentación completa del proyecto está disponible como Jupyter Book en GitHub Pages:
 
-- **Construir localmente:**
+👉 **[Ver Documentación Completa](https://mrspain2104.github.io/Telco-Customer-Churn-Mlops/)**
 
-  ```bash
-  pip install "jupyter-book<2.0"
-  jupyter-book build jupyter-book
-  ```
+La documentación incluye:
+- Presentación del proyecto y equipo
+- Los 3 notebooks completos con visualizaciones interactivas
+- Análisis exploratorio de datos
+- Entrenamiento y evaluación de modelos
+- Interpretabilidad con LIME
 
-- **Resultado:** abrir `jupyter-book/_build/html/index.html` en el navegador.
-- **GitHub Pages:** tras publicar el sitio, actualiza este README con el enlace público.
+### Construir Localmente
+
+```bash
+pip install "jupyter-book<2.0"
+jupyter-book build jupyter-book
+# Abrir jupyter-book/_build/html/index.html en el navegador
+```
 
 ---
 
