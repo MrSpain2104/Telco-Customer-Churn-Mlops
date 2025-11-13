@@ -1,0 +1,2115 @@
+
+<!DOCTYPE html>
+
+
+<html lang="es" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>2. Entrenamiento y Evaluación de Modelos &#8212; Telco Customer Churn - MLOps Project</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css?v=6644e6bb" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=78d55cf8"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script src="../_static/translations.js?v=d190bf04"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/2_model_training';</script>
+    <link rel="canonical" href="https://mrspain2104.github.io/Telco-Customer-Churn-Mlops/notebooks/2_model_training.html" />
+    <link rel="index" title="Índice" href="../genindex.html" />
+    <link rel="search" title="Búsqueda" href="../search.html" />
+    <link rel="next" title="3. Interpretabilidad de Modelos con LIME" href="3_interpretability.html" />
+    <link rel="prev" title="1. Exploración Inicial y Preprocesamiento de Datos" href="1_eda_preprocessing.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="es"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Saltar al contenido principal</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Volver arriba</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Advertencia de versión"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../intro.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Telco Customer Churn - MLOps Project</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Búsqueda" aria-label="Búsqueda" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Búsqueda</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="1_eda_preprocessing.html">1. Análisis Exploratorio y Preprocesamiento</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">2. Entrenamiento de Modelos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="3_interpretability.html">3. Interpretabilidad con LIME</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/MrSpain2104/Telco-Customer-Churn-Mlops" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Repositorio de origen"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/MrSpain2104/Telco-Customer-Churn-Mlops/issues/new?title=Issue%20on%20page%20%2Fnotebooks/2_model_training.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Abrir un problema"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Descarga esta pagina">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/notebooks/2_model_training.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Descargar archivo fuente"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Imprimir en PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Modo de pantalla completa"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="claro/oscuro" aria-label="claro/oscuro" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Búsqueda" aria-label="Búsqueda" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>2. Entrenamiento y Evaluación de Modelos</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contenido </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prediccion-de-churn-en-telecomunicaciones">Predicción de Churn en Telecomunicaciones</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#importacion-de-librerias">2.1 Importación de Librerías</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#carga-de-datos-limpios">2.2 Carga de Datos Limpios</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#preparacion-de-variables">2.3 Preparación de Variables</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#division-de-datos-train-test">2.4 División de Datos (Train/Test)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#construccion-de-pipelines-de-preprocesamiento">2.5 Construcción de Pipelines de Preprocesamiento</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#definicion-de-modelos-y-grids-de-hiperparametros">2.6 Definición de Modelos y Grids de Hiperparámetros</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#entrenamiento-con-gridsearchcv">2.7 Entrenamiento con GridSearchCV</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#estrategia-de-busqueda"><strong>Estrategia de Búsqueda:</strong></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#comparacion-de-modelos-validacion-cruzada">2.8 Comparación de Modelos - Validación Cruzada</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#analisis-e-interpretacion-validacion-cruzada"><strong>Análisis e Interpretación: Validación Cruzada</strong></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluacion-en-conjunto-de-prueba">2.9 Evaluación en Conjunto de Prueba</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#analisis-de-resultados-y-seleccion-del-modelo-final"><strong>Análisis de Resultados y Selección del Modelo Final</strong></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#el-dilema-rendimiento-tecnico-vs-impacto-de-negocio"><strong>El Dilema: Rendimiento Técnico vs. Impacto de Negocio</strong></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#el-factor-decisivo-la-capacidad-de-deteccion-recall"><strong>El Factor Decisivo: La Capacidad de Detección (Recall)</strong></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#veredicto-final"><strong>Veredicto Final</strong></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#matrices-de-confusion">2.10 Matrices de Confusión</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#analisis-visual-matrices-de-confusion"><strong>Análisis Visual: Matrices de Confusión</strong></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#el-factor-clave-falsos-negativos-fn-la-fuga-de-ingresos"><strong>El Factor Clave: Falsos Negativos (FN) - La Fuga de Ingresos</strong></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#el-trade-off-falsos-positivos-fp-el-costo-de-campana"><strong>El Trade-Off: Falsos Positivos (FP) - El Costo de Campaña</strong></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#conclusion-visual"><strong>Conclusión Visual</strong></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#curvas-roc">2.11 Curvas ROC</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#analisis-de-curvas-roc-poder-predictivo-general"><strong>Análisis de Curvas ROC - Poder Predictivo General</strong></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#conclusion"><strong>Conclusión</strong></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#importancia-de-caracteristicas">2.12 Importancia de Características</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#analisis-de-importancia-de-caracteristicas-que-impulsa-el-churn"><strong>Análisis de Importancia de Características: ¿Qué Impulsa el Churn?</strong></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#los-3-pilares-del-churn-contrato-costo-y-calidad-del-servicio"><strong>Los 3 Pilares del Churn: Contrato, Costo y Calidad del Servicio</strong></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#la-relacion-contractual-el-predictor-1-de-lealtad"><strong>1. La Relación Contractual: El Predictor #1 de Lealtad</strong></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#el-aspecto-economico-me-estas-cobrando-mucho"><strong>2. El Aspecto Económico: «Me estás cobrando mucho»</strong></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#la-calidad-y-tipo-de-servicio-no-estoy-satisfecho"><strong>3. La Calidad y Tipo de Servicio: «No estoy satisfecho»</strong></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#conclusion-final-de-caracteristicas"><strong>Conclusión Final de Características</strong></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#seleccion-del-mejor-modelo">2.13 Selección del Mejor Modelo</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#guardar-modelos-y-artefactos">2.14 Guardar Modelos y Artefactos</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reporte-de-clasificacion-detallado">2.15 Reporte de Clasificación Detallado</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#resumen-del-entrenamiento-y-evaluacion">2.16 Resumen del Entrenamiento y Evaluación</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#conclusiones-principales">Conclusiones Principales</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#modelos-entrenados">1. Modelos Entrenados:</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#desempeno-y-seleccion-del-modelo">2. Desempeño y Selección del Modelo:</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#variables-mas-importantes">3. Variables Más Importantes:</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#insights-para-el-negocio">4. Insights para el Negocio:</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#proximos-pasos">5. Próximos Pasos:</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="entrenamiento-y-evaluacion-de-modelos">
+<h1>2. Entrenamiento y Evaluación de Modelos<a class="headerlink" href="#entrenamiento-y-evaluacion-de-modelos" title="Link to this heading">#</a></h1>
+<section id="prediccion-de-churn-en-telecomunicaciones">
+<h2>Predicción de Churn en Telecomunicaciones<a class="headerlink" href="#prediccion-de-churn-en-telecomunicaciones" title="Link to this heading">#</a></h2>
+<p><strong>Objetivo</strong>: Entrenar y comparar múltiples modelos de clasificación (Random Forest, XGBoost, CatBoost, LightGBM) utilizando Pipelines, GridSearchCV y validación cruzada estratificada.</p>
+</section>
+<hr class="docutils" />
+<section id="importacion-de-librerias">
+<h2>2.1 Importación de Librerías<a class="headerlink" href="#importacion-de-librerias" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Librerías de manipulación de datos</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span>
+
+<span class="c1"># Librerías de visualización</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
+
+<span class="c1"># Librerías de preprocesamiento</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.model_selection</span><span class="w"> </span><span class="kn">import</span> <span class="n">train_test_split</span><span class="p">,</span> <span class="n">GridSearchCV</span><span class="p">,</span> <span class="n">StratifiedKFold</span><span class="p">,</span> <span class="n">cross_val_score</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.preprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">StandardScaler</span><span class="p">,</span> <span class="n">LabelEncoder</span><span class="p">,</span> <span class="n">OneHotEncoder</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.compose</span><span class="w"> </span><span class="kn">import</span> <span class="n">ColumnTransformer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.pipeline</span><span class="w"> </span><span class="kn">import</span> <span class="n">Pipeline</span>
+
+<span class="c1"># Modelos de clasificación</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.ensemble</span><span class="w"> </span><span class="kn">import</span> <span class="n">RandomForestClassifier</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">xgboost</span><span class="w"> </span><span class="kn">import</span> <span class="n">XGBClassifier</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">catboost</span><span class="w"> </span><span class="kn">import</span> <span class="n">CatBoostClassifier</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">lightgbm</span><span class="w"> </span><span class="kn">import</span> <span class="n">LGBMClassifier</span>
+
+<span class="c1"># Métricas de evaluación</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">accuracy_score</span><span class="p">,</span> <span class="n">precision_score</span><span class="p">,</span> <span class="n">recall_score</span><span class="p">,</span> <span class="n">f1_score</span><span class="p">,</span> 
+    <span class="n">roc_auc_score</span><span class="p">,</span> <span class="n">confusion_matrix</span><span class="p">,</span> <span class="n">classification_report</span><span class="p">,</span>
+    <span class="n">roc_curve</span><span class="p">,</span> <span class="n">auc</span>
+<span class="p">)</span>
+
+<span class="c1"># Guardar modelos</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">joblib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pickle</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+
+<span class="c1"># Configuración</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s1">&#39;seaborn-v0_8-darkgrid&#39;</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">set_palette</span><span class="p">(</span><span class="s2">&quot;husl&quot;</span><span class="p">)</span>
+<span class="o">%</span><span class="k">matplotlib</span> inline
+
+<span class="c1"># Semilla para reproducibilidad</span>
+<span class="n">RANDOM_STATE</span> <span class="o">=</span> <span class="mi">42</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">RANDOM_STATE</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Librerías importadas exitosamente&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fecha de ejecución: </span><span class="si">{</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M:%S&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>✓ Librerías importadas exitosamente
+Fecha de ejecución: 2025-11-12 23:12:35
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="carga-de-datos-limpios">
+<h2>2.2 Carga de Datos Limpios<a class="headerlink" href="#carga-de-datos-limpios" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Cargar dataset limpio</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;../data/telco_churn_clean.csv&#39;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dimensiones del dataset: </span><span class="si">{</span><span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Primeras filas:&quot;</span><span class="p">)</span>
+<span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Dimensiones del dataset: (7043, 20)
+
+Primeras filas:
+</pre></div>
+</div>
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>gender</th>
+      <th>SeniorCitizen</th>
+      <th>Partner</th>
+      <th>Dependents</th>
+      <th>tenure</th>
+      <th>PhoneService</th>
+      <th>MultipleLines</th>
+      <th>InternetService</th>
+      <th>OnlineSecurity</th>
+      <th>OnlineBackup</th>
+      <th>DeviceProtection</th>
+      <th>TechSupport</th>
+      <th>StreamingTV</th>
+      <th>StreamingMovies</th>
+      <th>Contract</th>
+      <th>PaperlessBilling</th>
+      <th>PaymentMethod</th>
+      <th>MonthlyCharges</th>
+      <th>TotalCharges</th>
+      <th>Churn</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Female</td>
+      <td>0</td>
+      <td>Yes</td>
+      <td>No</td>
+      <td>1</td>
+      <td>No</td>
+      <td>No phone service</td>
+      <td>DSL</td>
+      <td>No</td>
+      <td>Yes</td>
+      <td>No</td>
+      <td>No</td>
+      <td>No</td>
+      <td>No</td>
+      <td>Month-to-month</td>
+      <td>Yes</td>
+      <td>Electronic check</td>
+      <td>29.85</td>
+      <td>29.85</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Male</td>
+      <td>0</td>
+      <td>No</td>
+      <td>No</td>
+      <td>34</td>
+      <td>Yes</td>
+      <td>No</td>
+      <td>DSL</td>
+      <td>Yes</td>
+      <td>No</td>
+      <td>Yes</td>
+      <td>No</td>
+      <td>No</td>
+      <td>No</td>
+      <td>One year</td>
+      <td>No</td>
+      <td>Mailed check</td>
+      <td>56.95</td>
+      <td>1889.50</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Male</td>
+      <td>0</td>
+      <td>No</td>
+      <td>No</td>
+      <td>2</td>
+      <td>Yes</td>
+      <td>No</td>
+      <td>DSL</td>
+      <td>Yes</td>
+      <td>Yes</td>
+      <td>No</td>
+      <td>No</td>
+      <td>No</td>
+      <td>No</td>
+      <td>Month-to-month</td>
+      <td>Yes</td>
+      <td>Mailed check</td>
+      <td>53.85</td>
+      <td>108.15</td>
+      <td>Yes</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Male</td>
+      <td>0</td>
+      <td>No</td>
+      <td>No</td>
+      <td>45</td>
+      <td>No</td>
+      <td>No phone service</td>
+      <td>DSL</td>
+      <td>Yes</td>
+      <td>No</td>
+      <td>Yes</td>
+      <td>Yes</td>
+      <td>No</td>
+      <td>No</td>
+      <td>One year</td>
+      <td>No</td>
+      <td>Bank transfer (automatic)</td>
+      <td>42.30</td>
+      <td>1840.75</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Female</td>
+      <td>0</td>
+      <td>No</td>
+      <td>No</td>
+      <td>2</td>
+      <td>Yes</td>
+      <td>No</td>
+      <td>Fiber optic</td>
+      <td>No</td>
+      <td>No</td>
+      <td>No</td>
+      <td>No</td>
+      <td>No</td>
+      <td>No</td>
+      <td>Month-to-month</td>
+      <td>Yes</td>
+      <td>Electronic check</td>
+      <td>70.70</td>
+      <td>151.65</td>
+      <td>Yes</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="preparacion-de-variables">
+<h2>2.3 Preparación de Variables<a class="headerlink" href="#preparacion-de-variables" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Separar características (X) y variable objetivo (y)</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s1">&#39;Churn&#39;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Churn&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">map</span><span class="p">({</span><span class="s1">&#39;No&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;Yes&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;INFORMACIÓN DE LAS VARIABLES&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Distribución de la variable objetivo:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">value_counts</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Porcentaje de Churn: </span><span class="si">{</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">100</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>INFORMACIÓN DE LAS VARIABLES
+
+Distribución de la variable objetivo:
+Churn
+0    5174
+1    1869
+Name: count, dtype: int64
+
+Porcentaje de Churn: 26.54%
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Identificar tipos de variables</span>
+<span class="n">numeric_features</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">select_dtypes</span><span class="p">(</span><span class="n">include</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;int64&#39;</span><span class="p">,</span> <span class="s1">&#39;float64&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+<span class="n">categorical_features</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">select_dtypes</span><span class="p">(</span><span class="n">include</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;object&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;TIPOS DE VARIABLES&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Variables Numéricas (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">numeric_features</span><span class="p">)</span><span class="si">}</span><span class="s2">):&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">numeric_features</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">. </span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Variables Categóricas (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">categorical_features</span><span class="p">)</span><span class="si">}</span><span class="s2">):&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">categorical_features</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">. </span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">X</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">nunique</span><span class="p">()</span><span class="si">}</span><span class="s2"> categorías&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>TIPOS DE VARIABLES
+
+Variables Numéricas (4):
+  1. SeniorCitizen
+  2. tenure
+  3. MonthlyCharges
+  4. TotalCharges
+
+Variables Categóricas (15):
+  1. gender - 2 categorías
+  2. Partner - 2 categorías
+  3. Dependents - 2 categorías
+  4. PhoneService - 2 categorías
+  5. MultipleLines - 3 categorías
+  6. InternetService - 3 categorías
+  7. OnlineSecurity - 3 categorías
+  8. OnlineBackup - 3 categorías
+  9. DeviceProtection - 3 categorías
+  10. TechSupport - 3 categorías
+  11. StreamingTV - 3 categorías
+  12. StreamingMovies - 3 categorías
+  13. Contract - 3 categorías
+  14. PaperlessBilling - 2 categorías
+  15. PaymentMethod - 4 categorías
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="division-de-datos-train-test">
+<h2>2.4 División de Datos (Train/Test)<a class="headerlink" href="#division-de-datos-train-test" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># División estratificada 80/20</span>
+<span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
+    <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">RANDOM_STATE</span><span class="p">,</span> <span class="n">stratify</span><span class="o">=</span><span class="n">y</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DIVISIÓN DE DATOS&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Conjunto de Entrenamiento:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  - X_train: </span><span class="si">{</span><span class="n">X_train</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  - y_train: </span><span class="si">{</span><span class="n">y_train</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  - Distribución: </span><span class="si">{</span><span class="n">y_train</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Conjunto de Prueba:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  - X_test: </span><span class="si">{</span><span class="n">X_test</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  - y_test: </span><span class="si">{</span><span class="n">y_test</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  - Distribución: </span><span class="si">{</span><span class="n">y_test</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Porcentaje de Churn en Train: </span><span class="si">{</span><span class="p">(</span><span class="n">y_train</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="n">y_train</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">100</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Porcentaje de Churn en Test: </span><span class="si">{</span><span class="p">(</span><span class="n">y_test</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="n">y_test</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">100</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;División estratificada exitosa&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>DIVISIÓN DE DATOS
+
+Conjunto de Entrenamiento:
+  - X_train: (5634, 19)
+  - y_train: (5634,)
+  - Distribución: {0: 4139, 1: 1495}
+
+Conjunto de Prueba:
+  - X_test: (1409, 19)
+  - y_test: (1409,)
+  - Distribución: {0: 1035, 1: 374}
+Porcentaje de Churn en Train: 26.54%
+Porcentaje de Churn en Test: 26.54%
+División estratificada exitosa
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="construccion-de-pipelines-de-preprocesamiento">
+<h2>2.5 Construcción de Pipelines de Preprocesamiento<a class="headerlink" href="#construccion-de-pipelines-de-preprocesamiento" title="Link to this heading">#</a></h2>
+<p>Creamos un <strong>ColumnTransformer</strong> que:</p>
+<ul class="simple">
+<li><p><strong>Variables numéricas</strong>: Aplica <code class="docutils literal notranslate"><span class="pre">StandardScaler</span></code> para normalización.</p></li>
+<li><p><strong>Variables categóricas</strong>: Aplica <code class="docutils literal notranslate"><span class="pre">OneHotEncoder</span></code> para codificación.</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Definir transformaciones</span>
+<span class="n">preprocessor</span> <span class="o">=</span> <span class="n">ColumnTransformer</span><span class="p">(</span>
+    <span class="n">transformers</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">(</span><span class="s1">&#39;num&#39;</span><span class="p">,</span> <span class="n">StandardScaler</span><span class="p">(),</span> <span class="n">numeric_features</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;cat&#39;</span><span class="p">,</span> <span class="n">OneHotEncoder</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="s1">&#39;first&#39;</span><span class="p">,</span> <span class="n">handle_unknown</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">),</span> <span class="n">categorical_features</span><span class="p">)</span>
+    <span class="p">],</span>
+    <span class="n">remainder</span><span class="o">=</span><span class="s1">&#39;passthrough&#39;</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;PIPELINE DE PREPROCESAMIENTO&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Transformaciones definidas:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  1. Variables Numéricas (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">numeric_features</span><span class="p">)</span><span class="si">}</span><span class="s2">): StandardScaler&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  2. Variables Categóricas (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">categorical_features</span><span class="p">)</span><span class="si">}</span><span class="s2">): OneHotEncoder&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>PIPELINE DE PREPROCESAMIENTO
+
+Transformaciones definidas:
+  1. Variables Numéricas (4): StandardScaler
+  2. Variables Categóricas (15): OneHotEncoder
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="definicion-de-modelos-y-grids-de-hiperparametros">
+<h2>2.6 Definición de Modelos y Grids de Hiperparámetros<a class="headerlink" href="#definicion-de-modelos-y-grids-de-hiperparametros" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Definir modelos base</span>
+<span class="n">models</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;RandomForest&#39;</span><span class="p">:</span> <span class="n">RandomForestClassifier</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="n">RANDOM_STATE</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">),</span>
+    <span class="s1">&#39;XGBoost&#39;</span><span class="p">:</span> <span class="n">XGBClassifier</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="n">RANDOM_STATE</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">eval_metric</span><span class="o">=</span><span class="s1">&#39;logloss&#39;</span><span class="p">),</span>
+    <span class="s1">&#39;CatBoost&#39;</span><span class="p">:</span> <span class="n">CatBoostClassifier</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="n">RANDOM_STATE</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+    <span class="s1">&#39;LightGBM&#39;</span><span class="p">:</span> <span class="n">LGBMClassifier</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="n">RANDOM_STATE</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1"># Definir grids de hiperparámetros</span>
+<span class="n">param_grids</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;RandomForest&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;classifier__n_estimators&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">200</span><span class="p">],</span>
+        <span class="s1">&#39;classifier__max_depth&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span>
+        <span class="s1">&#39;classifier__min_samples_split&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>
+        <span class="s1">&#39;classifier__min_samples_leaf&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+        <span class="s1">&#39;classifier__max_features&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;sqrt&#39;</span><span class="p">,</span> <span class="s1">&#39;log2&#39;</span><span class="p">],</span>
+        <span class="s1">&#39;classifier__bootstrap&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">True</span><span class="p">],</span>
+        <span class="s1">&#39;classifier__criterion&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;gini&#39;</span><span class="p">,</span> <span class="s1">&#39;entropy&#39;</span><span class="p">],</span>
+        <span class="s1">&#39;classifier__class_weight&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;balanced&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
+    <span class="p">},</span>
+    <span class="s1">&#39;XGBoost&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;classifier__n_estimators&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">200</span><span class="p">],</span>
+        <span class="s1">&#39;classifier__max_depth&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span>
+        <span class="s1">&#39;classifier__learning_rate&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span>
+        <span class="s1">&#39;classifier__subsample&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span>
+        <span class="s1">&#39;classifier__colsample_bytree&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span>
+        <span class="s1">&#39;classifier__gamma&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span>
+        <span class="s1">&#39;classifier__min_child_weight&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+        <span class="s1">&#39;classifier__reg_alpha&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span>
+        <span class="s1">&#39;classifier__reg_lambda&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">],</span>
+        <span class="s1">&#39;classifier__scale_pos_weight&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+    <span class="p">},</span>
+    <span class="s1">&#39;CatBoost&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;classifier__iterations&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">200</span><span class="p">],</span>
+        <span class="s1">&#39;classifier__depth&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span>
+        <span class="s1">&#39;classifier__learning_rate&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span>
+        <span class="s1">&#39;classifier__l2_leaf_reg&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>
+        <span class="s1">&#39;classifier__bagging_temperature&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+        <span class="s1">&#39;classifier__border_count&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">],</span>
+        <span class="s1">&#39;classifier__random_strength&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>
+        <span class="s1">&#39;classifier__subsample&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span>
+    <span class="p">},</span>
+    <span class="s1">&#39;LightGBM&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;classifier__n_estimators&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">200</span><span class="p">],</span>
+        <span class="s1">&#39;classifier__max_depth&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+        <span class="s1">&#39;classifier__learning_rate&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span>
+        <span class="s1">&#39;classifier__num_leaves&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">31</span><span class="p">,</span> <span class="mi">50</span><span class="p">],</span>
+        <span class="s1">&#39;classifier__min_child_samples&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">],</span>
+        <span class="s1">&#39;classifier__subsample&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span>
+        <span class="s1">&#39;classifier__colsample_bytree&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span>
+        <span class="s1">&#39;classifier__reg_alpha&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span>
+        <span class="s1">&#39;classifier__reg_lambda&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span>
+        <span class="s1">&#39;classifier__max_bin&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">255</span><span class="p">,</span> <span class="mi">500</span><span class="p">]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;MODELOS Y GRIDS DE HIPERPARÁMETROS&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">model_name</span><span class="p">,</span> <span class="n">grid</span> <span class="ow">in</span> <span class="n">param_grids</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  - Número de hiperparámetros: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">total_combinations</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">grid</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  - Combinaciones posibles: </span><span class="si">{</span><span class="n">total_combinations</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>MODELOS Y GRIDS DE HIPERPARÁMETROS
+
+RandomForest:
+  - Número de hiperparámetros: 8
+  - Combinaciones posibles: 192
+
+XGBoost:
+  - Número de hiperparámetros: 10
+  - Combinaciones posibles: 1,536
+
+CatBoost:
+  - Número de hiperparámetros: 8
+  - Combinaciones posibles: 576
+
+LightGBM:
+  - Número de hiperparámetros: 10
+  - Combinaciones posibles: 1,536
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="entrenamiento-con-gridsearchcv">
+<h2>2.7 Entrenamiento con GridSearchCV<a class="headerlink" href="#entrenamiento-con-gridsearchcv" title="Link to this heading">#</a></h2>
+<section id="estrategia-de-busqueda">
+<h3><strong>Estrategia de Búsqueda:</strong><a class="headerlink" href="#estrategia-de-busqueda" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><strong>Validación cruzada estratificada</strong> con 5 folds.</p></li>
+<li><p><strong>Métrica de optimización</strong>: ROC-AUC (para clases desbalanceadas).</p></li>
+<li><p><strong>GridSearchCV</strong> para exploración exhaustiva de hiperparámetros.</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Configuración de validación cruzada</span>
+<span class="n">cv_strategy</span> <span class="o">=</span> <span class="n">StratifiedKFold</span><span class="p">(</span><span class="n">n_splits</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">RANDOM_STATE</span><span class="p">)</span>
+
+<span class="c1"># Diccionarios para almacenar resultados</span>
+<span class="n">best_models</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">best_params</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">cv_scores</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">training_times</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ENTRENAMIENTO DE MODELOS CON GRIDSEARCHCV&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="o">*</span><span class="mi">80</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Esto puede tardar varios minutos...</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">model_name</span><span class="p">,</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">models</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">{</span><span class="s1">&#39;=&#39;</span><span class="o">*</span><span class="mi">80</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Entrenando: </span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;=&#39;</span><span class="o">*</span><span class="mi">80</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># Crear pipeline</span>
+    <span class="n">pipeline</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">([</span>
+        <span class="p">(</span><span class="s1">&#39;preprocessor&#39;</span><span class="p">,</span> <span class="n">preprocessor</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;classifier&#39;</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
+    <span class="p">])</span>
+    
+    <span class="c1"># Configurar GridSearchCV</span>
+    <span class="n">grid_search</span> <span class="o">=</span> <span class="n">GridSearchCV</span><span class="p">(</span>
+        <span class="n">estimator</span><span class="o">=</span><span class="n">pipeline</span><span class="p">,</span>
+        <span class="n">param_grid</span><span class="o">=</span><span class="n">param_grids</span><span class="p">[</span><span class="n">model_name</span><span class="p">],</span>
+        <span class="n">cv</span><span class="o">=</span><span class="n">cv_strategy</span><span class="p">,</span>
+        <span class="n">scoring</span><span class="o">=</span><span class="s1">&#39;roc_auc&#39;</span><span class="p">,</span>
+        <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">return_train_score</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># Entrenar</span>
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+    <span class="n">grid_search</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+    <span class="n">end_time</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+    <span class="n">training_time</span> <span class="o">=</span> <span class="p">(</span><span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">)</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span>
+    
+    <span class="c1"># Almacenar resultados</span>
+    <span class="n">best_models</span><span class="p">[</span><span class="n">model_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">grid_search</span><span class="o">.</span><span class="n">best_estimator_</span>
+    <span class="n">best_params</span><span class="p">[</span><span class="n">model_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">grid_search</span><span class="o">.</span><span class="n">best_params_</span>
+    <span class="n">cv_scores</span><span class="p">[</span><span class="n">model_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">grid_search</span><span class="o">.</span><span class="n">best_score_</span>
+    <span class="n">training_times</span><span class="p">[</span><span class="n">model_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">training_time</span>
+    
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> </span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2"> entrenado exitosamente&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  - Mejor score CV (ROC-AUC): </span><span class="si">{</span><span class="n">grid_search</span><span class="o">.</span><span class="n">best_score_</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  - Tiempo de entrenamiento: </span><span class="si">{</span><span class="n">training_time</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> segundos&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  - Mejores hiperparámetros:&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">param</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">grid_search</span><span class="o">.</span><span class="n">best_params_</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;      </span><span class="si">{</span><span class="n">param</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot; ENTRENAMIENTO COMPLETADO&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ENTRENAMIENTO DE MODELOS CON GRIDSEARCHCV
+================================================================================
+
+Esto puede tardar varios minutos...
+
+
+================================================================================
+Entrenando: RandomForest
+================================================================================
+Fitting 5 folds for each of 192 candidates, totalling 960 fits
+Fitting 5 folds for each of 192 candidates, totalling 960 fits
+
+✓ RandomForest entrenado exitosamente
+  - Mejor score CV (ROC-AUC): 0.8459
+  - Tiempo de entrenamiento: 347.66 segundos
+  - Mejores hiperparámetros:
+      classifier__bootstrap: True
+      classifier__class_weight: balanced
+      classifier__criterion: entropy
+      classifier__max_depth: 10
+      classifier__max_features: sqrt
+      classifier__min_samples_leaf: 2
+      classifier__min_samples_split: 5
+      classifier__n_estimators: 200
+
+================================================================================
+Entrenando: XGBoost
+================================================================================
+Fitting 5 folds for each of 1536 candidates, totalling 7680 fits
+
+✓ RandomForest entrenado exitosamente
+  - Mejor score CV (ROC-AUC): 0.8459
+  - Tiempo de entrenamiento: 347.66 segundos
+  - Mejores hiperparámetros:
+      classifier__bootstrap: True
+      classifier__class_weight: balanced
+      classifier__criterion: entropy
+      classifier__max_depth: 10
+      classifier__max_features: sqrt
+      classifier__min_samples_leaf: 2
+      classifier__min_samples_split: 5
+      classifier__n_estimators: 200
+
+================================================================================
+Entrenando: XGBoost
+================================================================================
+Fitting 5 folds for each of 1536 candidates, totalling 7680 fits
+
+✓ XGBoost entrenado exitosamente
+  - Mejor score CV (ROC-AUC): 0.8491
+  - Tiempo de entrenamiento: 603.91 segundos
+  - Mejores hiperparámetros:
+      classifier__colsample_bytree: 1.0
+      classifier__gamma: 0
+      classifier__learning_rate: 0.1
+      classifier__max_depth: 3
+      classifier__min_child_weight: 3
+      classifier__n_estimators: 100
+      classifier__reg_alpha: 0
+      classifier__reg_lambda: 1.5
+      classifier__scale_pos_weight: 1
+      classifier__subsample: 0.8
+
+================================================================================
+Entrenando: CatBoost
+================================================================================
+Fitting 5 folds for each of 576 candidates, totalling 2880 fits
+
+✓ XGBoost entrenado exitosamente
+  - Mejor score CV (ROC-AUC): 0.8491
+  - Tiempo de entrenamiento: 603.91 segundos
+  - Mejores hiperparámetros:
+      classifier__colsample_bytree: 1.0
+      classifier__gamma: 0
+      classifier__learning_rate: 0.1
+      classifier__max_depth: 3
+      classifier__min_child_weight: 3
+      classifier__n_estimators: 100
+      classifier__reg_alpha: 0
+      classifier__reg_lambda: 1.5
+      classifier__scale_pos_weight: 1
+      classifier__subsample: 0.8
+
+================================================================================
+Entrenando: CatBoost
+================================================================================
+Fitting 5 folds for each of 576 candidates, totalling 2880 fits
+
+✓ CatBoost entrenado exitosamente
+  - Mejor score CV (ROC-AUC): 0.8508
+  - Tiempo de entrenamiento: 1189.33 segundos
+  - Mejores hiperparámetros:
+      classifier__bagging_temperature: 0
+      classifier__border_count: 32
+      classifier__depth: 4
+      classifier__iterations: 100
+      classifier__l2_leaf_reg: 5
+      classifier__learning_rate: 0.1
+      classifier__random_strength: 1
+      classifier__subsample: 0.8
+
+================================================================================
+Entrenando: LightGBM
+================================================================================
+Fitting 5 folds for each of 1536 candidates, totalling 7680 fits
+
+✓ CatBoost entrenado exitosamente
+  - Mejor score CV (ROC-AUC): 0.8508
+  - Tiempo de entrenamiento: 1189.33 segundos
+  - Mejores hiperparámetros:
+      classifier__bagging_temperature: 0
+      classifier__border_count: 32
+      classifier__depth: 4
+      classifier__iterations: 100
+      classifier__l2_leaf_reg: 5
+      classifier__learning_rate: 0.1
+      classifier__random_strength: 1
+      classifier__subsample: 0.8
+
+================================================================================
+Entrenando: LightGBM
+================================================================================
+Fitting 5 folds for each of 1536 candidates, totalling 7680 fits
+
+✓ LightGBM entrenado exitosamente
+  - Mejor score CV (ROC-AUC): 0.8486
+  - Tiempo de entrenamiento: 2774.53 segundos
+  - Mejores hiperparámetros:
+      classifier__colsample_bytree: 0.8
+      classifier__learning_rate: 0.01
+      classifier__max_bin: 255
+      classifier__max_depth: 5
+      classifier__min_child_samples: 30
+      classifier__n_estimators: 200
+      classifier__num_leaves: 50
+      classifier__reg_alpha: 0
+      classifier__reg_lambda: 0
+      classifier__subsample: 0.8
+
+
+================================================================================
+✓ ENTRENAMIENTO COMPLETADO
+================================================================================
+
+✓ LightGBM entrenado exitosamente
+  - Mejor score CV (ROC-AUC): 0.8486
+  - Tiempo de entrenamiento: 2774.53 segundos
+  - Mejores hiperparámetros:
+      classifier__colsample_bytree: 0.8
+      classifier__learning_rate: 0.01
+      classifier__max_bin: 255
+      classifier__max_depth: 5
+      classifier__min_child_samples: 30
+      classifier__n_estimators: 200
+      classifier__num_leaves: 50
+      classifier__reg_alpha: 0
+      classifier__reg_lambda: 0
+      classifier__subsample: 0.8
+
+
+================================================================================
+✓ ENTRENAMIENTO COMPLETADO
+================================================================================
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="comparacion-de-modelos-validacion-cruzada">
+<h2>2.8 Comparación de Modelos - Validación Cruzada<a class="headerlink" href="#comparacion-de-modelos-validacion-cruzada" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Crear DataFrame de resultados</span>
+<span class="n">cv_results_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+    <span class="s1">&#39;Modelo&#39;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">cv_scores</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
+    <span class="s1">&#39;ROC-AUC (CV)&#39;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">cv_scores</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span>
+    <span class="s1">&#39;Tiempo (seg)&#39;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">training_times</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+<span class="p">})</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s1">&#39;ROC-AUC (CV)&#39;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;RESULTADOS DE VALIDACIÓN CRUZADA&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">cv_results_df</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+
+<span class="c1"># Visualización</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+
+<span class="c1"># Gráfico de ROC-AUC</span>
+<span class="n">colors</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">color_palette</span><span class="p">(</span><span class="s1">&#39;viridis&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">cv_results_df</span><span class="p">))</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">barh</span><span class="p">(</span><span class="n">cv_results_df</span><span class="p">[</span><span class="s1">&#39;Modelo&#39;</span><span class="p">],</span> <span class="n">cv_results_df</span><span class="p">[</span><span class="s1">&#39;ROC-AUC (CV)&#39;</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;ROC-AUC Score&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Comparación de Modelos - ROC-AUC (CV)&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">])</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">cv_results_df</span><span class="p">[</span><span class="s1">&#39;ROC-AUC (CV)&#39;</span><span class="p">]):</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">v</span> <span class="o">+</span> <span class="mf">0.005</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">v</span><span class="si">:</span><span class="s1">.4f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">)</span>
+
+<span class="c1"># Gráfico de tiempo de entrenamiento</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">barh</span><span class="p">(</span><span class="n">cv_results_df</span><span class="p">[</span><span class="s1">&#39;Modelo&#39;</span><span class="p">],</span> <span class="n">cv_results_df</span><span class="p">[</span><span class="s1">&#39;Tiempo (seg)&#39;</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Tiempo de Entrenamiento (segundos)&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Tiempo de Entrenamiento por Modelo&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">cv_results_df</span><span class="p">[</span><span class="s1">&#39;Tiempo (seg)&#39;</span><span class="p">]):</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">v</span> <span class="o">+</span> <span class="mi">5</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">v</span><span class="si">:</span><span class="s1">.1f</span><span class="si">}</span><span class="s1">s&#39;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>RESULTADOS DE VALIDACIÓN CRUZADA
+      Modelo  ROC-AUC (CV)  Tiempo (seg)
+    CatBoost      0.850818   1189.328721
+     XGBoost      0.849060    603.908213
+    LightGBM      0.848568   2774.530446
+RandomForest      0.845931    347.660780
+      Modelo  ROC-AUC (CV)  Tiempo (seg)
+    CatBoost      0.850818   1189.328721
+     XGBoost      0.849060    603.908213
+    LightGBM      0.848568   2774.530446
+RandomForest      0.845931    347.660780
+</pre></div>
+</div>
+<img alt="../_images/a8809311c6582b1596789d2d1bb03449e438785cbaf783bac35813ea5276fde6.png" src="../_images/a8809311c6582b1596789d2d1bb03449e438785cbaf783bac35813ea5276fde6.png" />
+</div>
+</div>
+<section id="analisis-e-interpretacion-validacion-cruzada">
+<h3><strong>Análisis e Interpretación: Validación Cruzada</strong><a class="headerlink" href="#analisis-e-interpretacion-validacion-cruzada" title="Link to this heading">#</a></h3>
+<p><strong>Hallazgos Clave:</strong></p>
+<ul class="simple">
+<li><p>Todos los modelos tienen un <strong>desempeño similar</strong> en validación cruzada (ROC-AUC entre 0.82-0.86).</p></li>
+<li><p>Los modelos de gradient boosting (XGBoost, LightGBM, CatBoost) suelen superar a Random Forest.</p></li>
+<li><p><strong>LightGBM</strong> generalmente es el más rápido en entrenamiento.</p></li>
+<li><p><strong>CatBoost</strong> maneja automáticamente variables categóricas sin necesidad de encoding previo.</p></li>
+</ul>
+<p><strong>Próximo paso</strong>: Evaluar los modelos en el conjunto de prueba.</p>
+</section>
+</section>
+<section id="evaluacion-en-conjunto-de-prueba">
+<h2>2.9 Evaluación en Conjunto de Prueba<a class="headerlink" href="#evaluacion-en-conjunto-de-prueba" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Realizar predicciones para todos los modelos</span>
+<span class="n">test_predictions</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">test_probabilities</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="k">for</span> <span class="n">model_name</span><span class="p">,</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">best_models</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">test_predictions</span><span class="p">[</span><span class="n">model_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+    <span class="n">test_probabilities</span><span class="p">[</span><span class="n">model_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X_test</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot; Predicciones generadas para todos los modelos&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> Predicciones generadas para todos los modelos
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">test_metrics</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">model_name</span> <span class="ow">in</span> <span class="n">best_models</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+    <span class="n">y_pred</span> <span class="o">=</span> <span class="n">test_predictions</span><span class="p">[</span><span class="n">model_name</span><span class="p">]</span>
+    <span class="n">y_proba</span> <span class="o">=</span> <span class="n">test_probabilities</span><span class="p">[</span><span class="n">model_name</span><span class="p">]</span>
+    
+    <span class="n">metrics</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;Modelo&#39;</span><span class="p">:</span> <span class="n">model_name</span><span class="p">,</span>
+        <span class="s1">&#39;Accuracy&#39;</span><span class="p">:</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">),</span>
+        <span class="s1">&#39;Precision&#39;</span><span class="p">:</span> <span class="n">precision_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">),</span>
+        <span class="s1">&#39;Recall&#39;</span><span class="p">:</span> <span class="n">recall_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">),</span>
+        <span class="s1">&#39;F1-Score&#39;</span><span class="p">:</span> <span class="n">f1_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">),</span>
+        <span class="s1">&#39;ROC-AUC&#39;</span><span class="p">:</span> <span class="n">roc_auc_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_proba</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="n">test_metrics</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">metrics</span><span class="p">)</span>
+
+<span class="c1"># Crear DataFrame de métricas</span>
+<span class="n">test_metrics_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">test_metrics</span><span class="p">)</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s1">&#39;ROC-AUC&#39;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;MÉTRICAS DE EVALUACIÓN EN CONJUNTO DE PRUEBA&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">test_metrics_df</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+
+<span class="c1"># Visualización</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+
+<span class="n">metrics_to_plot</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Accuracy&#39;</span><span class="p">,</span> <span class="s1">&#39;Precision&#39;</span><span class="p">,</span> <span class="s1">&#39;Recall&#39;</span><span class="p">,</span> <span class="s1">&#39;F1-Score&#39;</span><span class="p">,</span> <span class="s1">&#39;ROC-AUC&#39;</span><span class="p">]</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">test_metrics_df</span><span class="p">))</span>
+<span class="n">width</span> <span class="o">=</span> <span class="mf">0.15</span>
+
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">metric</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">metrics_to_plot</span><span class="p">):</span>
+    <span class="n">offset</span> <span class="o">=</span> <span class="n">width</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">offset</span><span class="p">,</span> <span class="n">test_metrics_df</span><span class="p">[</span><span class="n">metric</span><span class="p">],</span> <span class="n">width</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Modelos&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Score&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Comparación de Métricas en Conjunto de Prueba&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">test_metrics_df</span><span class="p">[</span><span class="s1">&#39;Modelo&#39;</span><span class="p">],</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">11</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;lower right&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>MÉTRICAS DE EVALUACIÓN EN CONJUNTO DE PRUEBA
+      Modelo  Accuracy  Precision   Recall  F1-Score  ROC-AUC
+    CatBoost  0.801987   0.665505 0.510695  0.577912 0.845505
+    LightGBM  0.795600   0.674797 0.443850  0.535484 0.844354
+     XGBoost  0.801987   0.658863 0.526738  0.585438 0.844315
+RandomForest  0.766501   0.543520 0.751337  0.630752 0.841812
+</pre></div>
+</div>
+<img alt="../_images/a95434444ca345a7e10fc79b6a37120a30b24708bdc0eb3483104f5bca69c262.png" src="../_images/a95434444ca345a7e10fc79b6a37120a30b24708bdc0eb3483104f5bca69c262.png" />
+</div>
+</div>
+<section id="analisis-de-resultados-y-seleccion-del-modelo-final">
+<h3><strong>Análisis de Resultados y Selección del Modelo Final</strong><a class="headerlink" href="#analisis-de-resultados-y-seleccion-del-modelo-final" title="Link to this heading">#</a></h3>
+<p>Tras la evaluación de los cuatro modelos, se selecciona <strong>RandomForest</strong> como la opción óptima para el objetivo de negocio de predecir el churn.</p>
+<section id="el-dilema-rendimiento-tecnico-vs-impacto-de-negocio">
+<h4><strong>El Dilema: Rendimiento Técnico vs. Impacto de Negocio</strong><a class="headerlink" href="#el-dilema-rendimiento-tecnico-vs-impacto-de-negocio" title="Link to this heading">#</a></h4>
+<p>En la fase de validación cruzada, <strong>CatBoost</strong> y <strong>XGBoost</strong> mostraron una ligera superioridad técnica (ROC-AUC ≈ 0.85). Sin embargo, la evaluación en el conjunto de prueba, que simula el rendimiento real, reveló una debilidad crítica en su enfoque.</p>
+</section>
+<section id="el-factor-decisivo-la-capacidad-de-deteccion-recall">
+<h4><strong>El Factor Decisivo: La Capacidad de Detección (Recall)</strong><a class="headerlink" href="#el-factor-decisivo-la-capacidad-de-deteccion-recall" title="Link to this heading">#</a></h4>
+<p>El objetivo principal es identificar al mayor número posible de clientes en riesgo para poder actuar.</p>
+<ul class="simple">
+<li><p><strong>CatBoost y XGBoost:</strong> A pesar de su alta precisión, <strong>fallan en identificar a casi la mitad de los clientes que realmente se van a ir (Recall ≈ 52%)</strong>. Este es el error más costoso para el negocio, ya que representa una pérdida de ingresos no detectada.</p></li>
+<li><p><strong>RandomForest:</strong> En cambio, sacrifica algo de precisión para alcanzar un <strong>Recall del 75.1%</strong>. Esto significa que <strong>identifica a 3 de cada 4 clientes en riesgo</strong>, alineándose directamente con el objetivo de minimizar la fuga de clientes.</p></li>
+</ul>
+</section>
+</section>
+<section id="veredicto-final">
+<h3><strong>Veredicto Final</strong><a class="headerlink" href="#veredicto-final" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><strong>Modelo Seleccionado:</strong> <code class="docutils literal notranslate"><span class="pre">RandomForest</span></code></p></li>
+<li><p><strong>Justificación Principal:</strong> Ofrece el <strong>Recall más alto (75.1%)</strong> y el <strong>mejor balance general (F1-Score: 0.631)</strong>, convirtiéndolo en la herramienta más eficaz para reducir la pérdida de clientes.</p></li>
+<li><p><strong>Trade-off Aceptado:</strong> Se asume un mayor número de «falsos positivos» (menor precisión) a cambio de una reducción drástica en la fuga de clientes no detectada, que es el riesgo principal a mitigar.</p></li>
+</ul>
+</section>
+</section>
+<section id="matrices-de-confusion">
+<h2>2.10 Matrices de Confusión<a class="headerlink" href="#matrices-de-confusion" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Crear matrices de confusión para todos los modelos</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">12</span><span class="p">))</span>
+<span class="n">axes</span> <span class="o">=</span> <span class="n">axes</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">model_name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">best_models</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+    <span class="n">cm</span> <span class="o">=</span> <span class="n">confusion_matrix</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">test_predictions</span><span class="p">[</span><span class="n">model_name</span><span class="p">])</span>
+    
+    <span class="c1"># Visualización</span>
+    <span class="n">sns</span><span class="o">.</span><span class="n">heatmap</span><span class="p">(</span><span class="n">cm</span><span class="p">,</span> <span class="n">annot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;YlGn&#39;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> 
+                <span class="n">cbar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">square</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">linewidths</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">linecolor</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span>
+                <span class="n">xticklabels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;No Churn&#39;</span><span class="p">,</span> <span class="s1">&#39;Churn&#39;</span><span class="p">],</span>
+                <span class="n">yticklabels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;No Churn&#39;</span><span class="p">,</span> <span class="s1">&#39;Churn&#39;</span><span class="p">],</span>
+                <span class="n">annot_kws</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;fontsize&#39;</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span> <span class="s1">&#39;fontweight&#39;</span><span class="p">:</span> <span class="s1">&#39;bold&#39;</span><span class="p">})</span>
+    
+    <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Matriz de Confusión - </span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">13</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Predicción&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">11</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Valor Real&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">11</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">)</span>
+    
+    <span class="c1"># Calcular métricas de la matriz</span>
+    <span class="n">tn</span><span class="p">,</span> <span class="n">fp</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">tp</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+    <span class="n">specificity</span> <span class="o">=</span> <span class="n">tn</span> <span class="o">/</span> <span class="p">(</span><span class="n">tn</span> <span class="o">+</span> <span class="n">fp</span><span class="p">)</span>
+    <span class="n">sensitivity</span> <span class="o">=</span> <span class="n">tp</span> <span class="o">/</span> <span class="p">(</span><span class="n">tp</span> <span class="o">+</span> <span class="n">fn</span><span class="p">)</span>
+    
+    <span class="c1"># Añadir texto con métricas</span>
+    <span class="n">info_text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;TN: </span><span class="si">{</span><span class="n">tn</span><span class="si">}</span><span class="s2"> | FP: </span><span class="si">{</span><span class="n">fp</span><span class="si">}</span><span class="se">\n</span><span class="s2">FN: </span><span class="si">{</span><span class="n">fn</span><span class="si">}</span><span class="s2"> | TP: </span><span class="si">{</span><span class="n">tp</span><span class="si">}</span><span class="se">\n</span><span class="s2">Sensitivity: </span><span class="si">{</span><span class="n">sensitivity</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="se">\n</span><span class="s2">Specificity: </span><span class="si">{</span><span class="n">specificity</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">info_text</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span> <span class="n">bbox</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">boxstyle</span><span class="o">=</span><span class="s1">&#39;round&#39;</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="s1">&#39;wheat&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">))</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s1">&#39;Matrices de Confusión - Comparación de Modelos&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mf">1.00</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/42a9af715f6c161538501ed3072d6f231c57a3419600fdbc2aa7cf0d86654ddb.png" src="../_images/42a9af715f6c161538501ed3072d6f231c57a3419600fdbc2aa7cf0d86654ddb.png" />
+</div>
+</div>
+<section id="analisis-visual-matrices-de-confusion">
+<h3><strong>Análisis Visual: Matrices de Confusión</strong><a class="headerlink" href="#analisis-visual-matrices-de-confusion" title="Link to this heading">#</a></h3>
+<p>Las matrices de confusión confirman visualmente por qué <strong>RandomForest</strong> es la elección estratégica correcta, a pesar de que los otros modelos parecen «más limpios» a primera vista.</p>
+<section id="el-factor-clave-falsos-negativos-fn-la-fuga-de-ingresos">
+<h4><strong>El Factor Clave: Falsos Negativos (FN) - La Fuga de Ingresos</strong><a class="headerlink" href="#el-factor-clave-falsos-negativos-fn-la-fuga-de-ingresos" title="Link to this heading">#</a></h4>
+<p>Este es el número en la <strong>esquina inferior izquierda</strong>: clientes que se fueron y que el modelo NO detectó. Este es el error más costoso.</p>
+<ul class="simple">
+<li><p><strong>RandomForest:</strong> <strong>Solo 93 clientes en riesgo no fueron detectados.</strong></p></li>
+<li><p><strong>XGBoost, CatBoost y LightGBM:</strong> Dejaron escapar a <strong>177, 183 y 208 clientes</strong> respectivamente. Esta es una fuga de ingresos masiva que estos modelos no lograron prevenir.</p></li>
+</ul>
+</section>
+<section id="el-trade-off-falsos-positivos-fp-el-costo-de-campana">
+<h4><strong>El Trade-Off: Falsos Positivos (FP) - El Costo de Campaña</strong><a class="headerlink" href="#el-trade-off-falsos-positivos-fp-el-costo-de-campana" title="Link to this heading">#</a></h4>
+<p>Este es el número en la <strong>esquina superior derecha</strong>: clientes leales que el modelo marcó incorrectamente como «en riesgo».</p>
+<ul class="simple">
+<li><p><strong>RandomForest:</strong> Generó <strong>236 falsas alarmas.</strong> Este es el «costo» de su alta capacidad de detección. La campaña de retención contactará a más gente de la necesaria.</p></li>
+<li><p><strong>XGBoost, CatBoost y LightGBM:</strong> Son mucho más conservadores, generando solo <strong>102, 96 y 80 falsas alarmas.</strong> No molestan a tantos clientes leales.</p></li>
+</ul>
+</section>
+</section>
+<section id="conclusion-visual">
+<h3><strong>Conclusión Visual</strong><a class="headerlink" href="#conclusion-visual" title="Link to this heading">#</a></h3>
+<p>Las matrices lo dejan claro:</p>
+<blockquote>
+<div><p><strong>RandomForest</strong> acepta un mayor <em>costo operativo</em> (contactar a 236 clientes leales por error) para evitar una <em>pérdida estratégica</em> mucho mayor (perder a casi 100 clientes menos que el siguiente mejor modelo).</p>
+</div></blockquote>
+<p>Para un problema de churn, donde el objetivo es <strong>minimizar la fuga de clientes</strong>, la elección de RandomForest está visualmente justificada como la estrategia más segura y rentable a largo plazo.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="curvas-roc">
+<h2>2.11 Curvas ROC<a class="headerlink" href="#curvas-roc" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Calcular curvas ROC para todos los modelos</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+
+<span class="n">colors</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;#e74c3c&#39;</span><span class="p">,</span> <span class="s1">&#39;#3498db&#39;</span><span class="p">,</span> <span class="s1">&#39;#2ecc71&#39;</span><span class="p">,</span> <span class="s1">&#39;#f39c12&#39;</span><span class="p">]</span>
+
+<span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">model_name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">best_models</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+    <span class="n">y_proba</span> <span class="o">=</span> <span class="n">test_probabilities</span><span class="p">[</span><span class="n">model_name</span><span class="p">]</span>
+    <span class="n">fpr</span><span class="p">,</span> <span class="n">tpr</span><span class="p">,</span> <span class="n">thresholds</span> <span class="o">=</span> <span class="n">roc_curve</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_proba</span><span class="p">)</span>
+    <span class="n">roc_auc</span> <span class="o">=</span> <span class="n">auc</span><span class="p">(</span><span class="n">fpr</span><span class="p">,</span> <span class="n">tpr</span><span class="p">)</span>
+    
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">fpr</span><span class="p">,</span> <span class="n">tpr</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">lw</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span> 
+             <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s1"> (AUC = </span><span class="si">{</span><span class="n">roc_auc</span><span class="si">:</span><span class="s1">.4f</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+
+<span class="c1"># Línea diagonal (clasificador aleatorio)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;k--&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Clasificador Aleatorio (AUC = 0.5000)&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.05</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;False Positive Rate (1 - Specificity)&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">13</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;True Positive Rate (Sensitivity)&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">13</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Curvas ROC - Comparación de Modelos&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;lower right&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">11</span><span class="p">,</span> <span class="n">frameon</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">shadow</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/2867ae27e9a51bf783d18ce0468a53f8d843c00750f0ec07f6992eacc1200779.png" src="../_images/2867ae27e9a51bf783d18ce0468a53f8d843c00750f0ec07f6992eacc1200779.png" />
+</div>
+</div>
+<section id="analisis-de-curvas-roc-poder-predictivo-general">
+<h3><strong>Análisis de Curvas ROC - Poder Predictivo General</strong><a class="headerlink" href="#analisis-de-curvas-roc-poder-predictivo-general" title="Link to this heading">#</a></h3>
+<p>La curva ROC y su métrica asociada, el AUC (Area Under the Curve), miden la capacidad de un modelo para <strong>discriminar entre un cliente que hará churn y uno que no</strong>, independientemente del umbral de decisión elegido.</p>
+<ul class="simple">
+<li><p><strong>Observación Clave:</strong> Las curvas de los cuatro modelos están prácticamente superpuestas, y sus valores AUC son casi idénticos (todos alrededor de <strong>0.84</strong>).</p></li>
+<li><p>Esto confirma que los cuatro modelos tienen un <strong>excelente y muy similar poder predictivo general</strong>. Todos son muy buenos diferenciando entre las dos clases.</p></li>
+</ul>
+</section>
+<section id="conclusion">
+<h3><strong>Conclusión</strong><a class="headerlink" href="#conclusion" title="Link to this heading">#</a></h3>
+<p>La gráfica ROC nos dice que <strong>no hay un ganador técnico claro en términos de capacidad de discriminación</strong>. Esto refuerza la idea de que la elección del mejor modelo no depende de su poder predictivo latente (que es comparable en todos), sino de su <strong>comportamiento práctico en el punto de decisión que nos interesa</strong>, como se analizó en las matrices de confusión.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="importancia-de-caracteristicas">
+<h2>2.12 Importancia de Características<a class="headerlink" href="#importancia-de-caracteristicas" title="Link to this heading">#</a></h2>
+<p>Analizamos qué variables tienen mayor impacto en las predicciones de cada modelo.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Función para extraer importancia de características</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_feature_importance</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">model_name</span><span class="p">):</span>
+    <span class="c1"># Obtener el clasificador del pipeline</span>
+    <span class="n">classifier</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">named_steps</span><span class="p">[</span><span class="s1">&#39;classifier&#39;</span><span class="p">]</span>
+    
+    <span class="c1"># Obtener el preprocesador del pipeline</span>
+    <span class="n">preprocessor</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">named_steps</span><span class="p">[</span><span class="s1">&#39;preprocessor&#39;</span><span class="p">]</span>
+    
+    <span class="c1"># Verificar si el clasificador tiene feature_importances_</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">classifier</span><span class="p">,</span> <span class="s1">&#39;feature_importances_&#39;</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2"> no tiene atributo &#39;feature_importances_&#39;&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    
+    <span class="c1"># Obtener nombres de las características después del preprocesamiento</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">feature_names</span> <span class="o">=</span> <span class="n">preprocessor</span><span class="o">.</span><span class="n">get_feature_names_out</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Error obteniendo nombres de características para </span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    
+    <span class="c1"># Obtener importancias</span>
+    <span class="n">importances</span> <span class="o">=</span> <span class="n">classifier</span><span class="o">.</span><span class="n">feature_importances_</span>
+    
+    <span class="c1"># Verificar que las dimensiones coincidan</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">feature_names</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">importances</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Dimensiones no coinciden para </span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">feature_names</span><span class="p">)</span><span class="si">}</span><span class="s2"> nombres vs </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">importances</span><span class="p">)</span><span class="si">}</span><span class="s2"> importancias&quot;</span><span class="p">)</span>
+        <span class="c1"># Ajustar al mínimo</span>
+        <span class="n">min_len</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">feature_names</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">importances</span><span class="p">))</span>
+        <span class="n">feature_names</span> <span class="o">=</span> <span class="n">feature_names</span><span class="p">[:</span><span class="n">min_len</span><span class="p">]</span>
+        <span class="n">importances</span> <span class="o">=</span> <span class="n">importances</span><span class="p">[:</span><span class="n">min_len</span><span class="p">]</span>
+    
+    <span class="c1"># Crear DataFrame</span>
+    <span class="n">importance_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+        <span class="s1">&#39;Feature&#39;</span><span class="p">:</span> <span class="n">feature_names</span><span class="p">,</span>
+        <span class="s1">&#39;Importance&#39;</span><span class="p">:</span> <span class="n">importances</span>
+    <span class="p">})</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s1">&#39;Importance&#39;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">importance_df</span>
+
+<span class="c1"># Verificar que best_models existe</span>
+<span class="k">if</span> <span class="s1">&#39;best_models&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">locals</span><span class="p">()</span> <span class="ow">and</span> <span class="s1">&#39;best_models&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; ERROR: &#39;best_models&#39; no está definido.&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Debes ejecutar primero la celda de entrenamiento (GridSearchCV).&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Ve a la celda &#39;2.7 Entrenamiento con GridSearchCV&#39; y ejecútala.&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="c1"># Extraer importancias para todos los modelos</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;EXTRACCIÓN DE IMPORTANCIA DE CARACTERÍSTICAS&quot;</span><span class="p">)</span>
+    
+    <span class="n">feature_importances</span> <span class="o">=</span> <span class="p">{}</span>
+    
+    <span class="k">for</span> <span class="n">model_name</span><span class="p">,</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">best_models</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Extrayendo importancia para: </span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">importance_df</span> <span class="o">=</span> <span class="n">get_feature_importance</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">model_name</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">importance_df</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">feature_importances</span><span class="p">[</span><span class="n">model_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">importance_df</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">importance_df</span><span class="p">)</span><span class="si">}</span><span class="s2"> características extraídas&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;   No se pudo extraer importancia para </span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Importancia extraída para </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">feature_importances</span><span class="p">)</span><span class="si">}</span><span class="s2"> modelos&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>EXTRACCIÓN DE IMPORTANCIA DE CARACTERÍSTICAS
+
+Extrayendo importancia para: RandomForest
+  30 características extraídas
+
+Extrayendo importancia para: XGBoost
+  30 características extraídas
+
+Extrayendo importancia para: CatBoost
+  30 características extraídas
+
+Extrayendo importancia para: LightGBM
+  30 características extraídas
+Importancia extraída para 4 modelos
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Visualizar Top 10 características más importantes por modelo</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">18</span><span class="p">,</span> <span class="mi">12</span><span class="p">))</span>
+<span class="n">axes</span> <span class="o">=</span> <span class="n">axes</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">importance_df</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">feature_importances</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+    <span class="n">top_features</span> <span class="o">=</span> <span class="n">importance_df</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+    
+    <span class="n">colors_bar</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">viridis</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">top_features</span><span class="p">)))</span>
+    
+    <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">barh</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">top_features</span><span class="p">)),</span> <span class="n">top_features</span><span class="p">[</span><span class="s1">&#39;Importance&#39;</span><span class="p">],</span> 
+                   <span class="n">color</span><span class="o">=</span><span class="n">colors_bar</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">top_features</span><span class="p">)))</span>
+    <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">(</span><span class="n">top_features</span><span class="p">[</span><span class="s1">&#39;Feature&#39;</span><span class="p">],</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Importancia&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">11</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Top 10 Características - </span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">invert_yaxis</span><span class="p">()</span>
+    <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+    
+    <span class="c1"># Añadir valores</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">top_features</span><span class="p">[</span><span class="s1">&#39;Importance&#39;</span><span class="p">]):</span>
+        <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">v</span> <span class="o">+</span> <span class="mf">0.002</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">v</span><span class="si">:</span><span class="s1">.4f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s1">&#39;Importancia de Características por Modelo&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mf">1.00</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="c1"># Imprimir Top 15 de cada modelo</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">TOP 15 CARACTERÍSTICAS MÁS IMPORTANTES POR MODELO&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">model_name</span><span class="p">,</span> <span class="n">importance_df</span> <span class="ow">in</span> <span class="n">feature_importances</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">importance_df</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">15</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/dcbb28906227ce56119a72982749d3f68c3935dc2cad8a750b194086caabf96f.png" src="../_images/dcbb28906227ce56119a72982749d3f68c3935dc2cad8a750b194086caabf96f.png" />
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>TOP 15 CARACTERÍSTICAS MÁS IMPORTANTES POR MODELO
+
+RandomForest:
+                                  Feature  Importance
+                              num__tenure    0.168440
+                        num__TotalCharges    0.151286
+                      num__MonthlyCharges    0.109227
+                   cat__Contract_Two year    0.104363
+         cat__InternetService_Fiber optic    0.063627
+      cat__PaymentMethod_Electronic check    0.045171
+                   cat__Contract_One year    0.038422
+                  cat__OnlineSecurity_Yes    0.032231
+                     cat__TechSupport_Yes    0.024693
+                cat__PaperlessBilling_Yes    0.019725
+     cat__TechSupport_No internet service    0.017216
+cat__DeviceProtection_No internet service    0.016285
+                      cat__Dependents_Yes    0.016244
+                         cat__gender_Male    0.016028
+ cat__StreamingMovies_No internet service    0.015404
+
+XGBoost:
+                            Feature  Importance
+   cat__InternetService_Fiber optic    0.197846
+             cat__Contract_Two year    0.190652
+             cat__Contract_One year    0.132492
+cat__PaymentMethod_Electronic check    0.084222
+            cat__InternetService_No    0.069818
+                        num__tenure    0.055038
+          cat__PaperlessBilling_Yes    0.033247
+           cat__StreamingMovies_Yes    0.030610
+               cat__StreamingTV_Yes    0.029510
+            cat__OnlineSecurity_Yes    0.026719
+                  num__TotalCharges    0.020288
+               cat__TechSupport_Yes    0.019072
+             cat__MultipleLines_Yes    0.017204
+              cat__PhoneService_Yes    0.014258
+                 num__SeniorCitizen    0.012920
+
+CatBoost:
+                             Feature  Importance
+              cat__Contract_Two year   17.441321
+                         num__tenure   17.286418
+    cat__InternetService_Fiber optic   13.639679
+                 num__MonthlyCharges    7.241403
+                   num__TotalCharges    6.694137
+ cat__PaymentMethod_Electronic check    5.124551
+              cat__Contract_One year    4.767485
+cat__TechSupport_No internet service    3.307246
+             cat__InternetService_No    3.187324
+             cat__OnlineSecurity_Yes    2.772119
+                cat__TechSupport_Yes    2.269581
+           cat__PaperlessBilling_Yes    2.117513
+              cat__MultipleLines_Yes    1.884485
+                 cat__Dependents_Yes    1.483617
+                    cat__gender_Male    1.452137
+
+LightGBM:
+                            Feature  Importance
+                  num__TotalCharges        1015
+                num__MonthlyCharges         955
+                        num__tenure         796
+cat__PaymentMethod_Electronic check         342
+          cat__PaperlessBilling_Yes         220
+             cat__Contract_Two year         190
+   cat__InternetService_Fiber optic         186
+            cat__OnlineSecurity_Yes         186
+           cat__StreamingMovies_Yes         184
+             cat__Contract_One year         155
+                   cat__gender_Male         153
+            cat__InternetService_No         147
+                 num__SeniorCitizen         147
+              cat__OnlineBackup_Yes         135
+             cat__MultipleLines_Yes         121
+</pre></div>
+</div>
+</div>
+</div>
+<section id="analisis-de-importancia-de-caracteristicas-que-impulsa-el-churn">
+<h3><strong>Análisis de Importancia de Características: ¿Qué Impulsa el Churn?</strong><a class="headerlink" href="#analisis-de-importancia-de-caracteristicas-que-impulsa-el-churn" title="Link to this heading">#</a></h3>
+</section>
+<section id="los-3-pilares-del-churn-contrato-costo-y-calidad-del-servicio">
+<h3><strong>Los 3 Pilares del Churn: Contrato, Costo y Calidad del Servicio</strong><a class="headerlink" href="#los-3-pilares-del-churn-contrato-costo-y-calidad-del-servicio" title="Link to this heading">#</a></h3>
+<p>Podemos agrupar las características más influyentes en tres grandes temas que cuentan una historia clara sobre por qué un cliente decide irse.</p>
+<section id="la-relacion-contractual-el-predictor-1-de-lealtad">
+<h4><strong>1. La Relación Contractual: El Predictor #1 de Lealtad</strong><a class="headerlink" href="#la-relacion-contractual-el-predictor-1-de-lealtad" title="Link to this heading">#</a></h4>
+<p>Este es, sin duda, el factor más dominante en todos los modelos.</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">cat__Contract_Two</span> <span class="pre">year</span></code> / <code class="docutils literal notranslate"><span class="pre">cat__Contract_One</span> <span class="pre">year</span></code></strong>: La presencia de un contrato a largo plazo es el indicador más fuerte de <strong>lealtad</strong>. Su importancia en los modelos (especialmente en XGBoost y CatBoost) sugiere que los clientes con contratos de 1 o 2 años rara vez se van. Por el contrario, los clientes con contrato <strong>mes a mes</strong> (la categoría base no mostrada) son los más propensos al churn.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">num__tenure</span></code> (Antigüedad)</strong>: Estrechamente relacionado con el contrato. Los clientes más nuevos (baja antigüedad) son mucho más volátiles. La antigüedad es consistentemente una de las 3 características más importantes para todos los modelos.</p></li>
+</ul>
+<blockquote>
+<div><p><strong>Insight de Negocio:</strong> La estrategia de retención más efectiva es, en primer lugar, una buena estrategia de captación: incentivar la firma de contratos a largo plazo. Los primeros meses de un cliente son críticos para asegurar su lealtad.</p>
+</div></blockquote>
+</section>
+<section id="el-aspecto-economico-me-estas-cobrando-mucho">
+<h4><strong>2. El Aspecto Económico: «Me estás cobrando mucho»</strong><a class="headerlink" href="#el-aspecto-economico-me-estas-cobrando-mucho" title="Link to this heading">#</a></h4>
+<p>El dinero es el segundo factor más relevante.</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">num__MonthlyCharges</span></code> (Cargos Mensuales)</strong>: Un cargo mensual elevado es un claro impulsor de churn. Los clientes son sensibles al precio recurrente.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">num__TotalCharges</span></code> (Cargos Totales)</strong>: Curiosamente, esta variable tiene un doble significado. Valores bajos pueden indicar clientes nuevos y, por tanto, en riesgo. Es una variable que interactúa mucho con la antigüedad (<code class="docutils literal notranslate"><span class="pre">tenure</span></code>).</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">cat__PaymentMethod_Electronic</span> <span class="pre">check</span></code> (Pago con Cheque Electrónico)</strong>: Esta característica aparece consistentemente en el top. Puede ser un indicador indirecto de clientes menos estables financieramente o que prefieren no comprometerse con pagos automáticos vía tarjeta de crédito, lo que se alinea con un comportamiento de cliente a corto plazo.</p></li>
+</ul>
+<blockquote>
+<div><p><strong>Insight de Negocio:</strong> Se deben revisar las estructuras de precios. Ofrecer descuentos por lealtad o planes con precios más competitivos puede ser clave. Analizar a los clientes que pagan con cheque electrónico podría revelar un segmento de alto riesgo al que dirigir ofertas específicas para cambiar a métodos de pago más estables.</p>
+</div></blockquote>
+</section>
+<section id="la-calidad-y-tipo-de-servicio-no-estoy-satisfecho">
+<h4><strong>3. La Calidad y Tipo de Servicio: «No estoy satisfecho»</strong><a class="headerlink" href="#la-calidad-y-tipo-de-servicio-no-estoy-satisfecho" title="Link to this heading">#</a></h4>
+<p>El tipo de servicio contratado, especialmente el de internet, es un fuerte diferenciador.</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">cat__InternetService_Fiber</span> <span class="pre">optic</span></code> (Internet con Fibra Óptica)</strong>: Este es uno de los hallazgos más interesantes. La fibra óptica, a pesar de ser un producto premium, es un <strong>fuerte predictor de CHURN</strong>.</p>
+<ul>
+<li><p><strong>Posibles Hipótesis:</strong> ¿Es el servicio de fibra más caro? ¿Es menos estable en ciertas áreas? ¿Atrae a un tipo de cliente más exigente y menos leal que cambia de proveedor buscando la mejor oferta?</p></li>
+</ul>
+</li>
+<li><p><strong>Servicios de Soporte y Seguridad (<code class="docutils literal notranslate"><span class="pre">TechSupport_Yes</span></code>, <code class="docutils literal notranslate"><span class="pre">OnlineSecurity_Yes</span></code>)</strong>: La ausencia de estos servicios de valor añadido aumenta el riesgo de churn. Los clientes que los contratan suelen estar más «invertidos» en el ecosistema de la compañía y perciben un mayor valor.</p></li>
+</ul>
+<blockquote>
+<div><p><strong>Insight de Negocio:</strong> ¡Hay que investigar urgentemente la experiencia del cliente con Fibra Óptica! Realizar encuestas de satisfacción a este segmento es prioritario. Además, promover activamente la contratación de servicios de soporte y seguridad puede actuar como una herramienta de «fidelización pasiva».</p>
+</div></blockquote>
+</section>
+</section>
+<section id="conclusion-final-de-caracteristicas">
+<h3><strong>Conclusión Final de Características</strong><a class="headerlink" href="#conclusion-final-de-caracteristicas" title="Link to this heading">#</a></h3>
+<p>El perfil del cliente con mayor riesgo de churn es claro y consistente a través de todos los modelos:</p>
+<blockquote>
+<div><p><strong>Un cliente relativamente nuevo, con un contrato mes a mes, que paga una tarifa mensual alta (probablemente por un servicio de Fibra Óptica) y no tiene servicios de soporte adicionales.</strong></p>
+</div></blockquote>
+</section>
+</section>
+<hr class="docutils" />
+<section id="seleccion-del-mejor-modelo">
+<h2>2.13 Selección del Mejor Modelo<a class="headerlink" href="#seleccion-del-mejor-modelo" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">best_model_row</span> <span class="o">=</span> <span class="n">test_metrics_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">test_metrics_df</span><span class="p">[</span><span class="s1">&#39;F1-Score&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">idxmax</span><span class="p">()]</span>
+<span class="n">best_model_name</span> <span class="o">=</span> <span class="n">best_model_row</span><span class="p">[</span><span class="s1">&#39;Modelo&#39;</span><span class="p">]</span>
+<span class="n">best_model</span> <span class="o">=</span> <span class="n">best_models</span><span class="p">[</span><span class="n">best_model_name</span><span class="p">]</span>
+
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;SELECCIÓN DEL MEJOR MODELO ESTRATÉGICO&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Criterio de Selección: Máximo F1-Score (mejor balance Precision-Recall)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> Mejor Modelo: </span><span class="si">{</span><span class="n">best_model_name</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Métricas clave en el conjunto de prueba:&quot;</span><span class="p">)</span>
+<span class="c1"># Imprimimos las métricas del modelo seleccionado</span>
+<span class="k">for</span> <span class="n">metric</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;F1-Score&#39;</span><span class="p">,</span> <span class="s1">&#39;Recall&#39;</span><span class="p">,</span> <span class="s1">&#39;Precision&#39;</span><span class="p">,</span> <span class="s1">&#39;ROC-AUC&#39;</span><span class="p">,</span> <span class="s1">&#39;Accuracy&#39;</span><span class="p">]:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  - </span><span class="si">{</span><span class="n">metric</span><span class="si">:</span><span class="s2">&lt;10</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">best_model_row</span><span class="p">[</span><span class="n">metric</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Mejores hiperparámetros encontrados:&quot;</span><span class="p">)</span>
+<span class="c1"># Imprimimos los hiperparámetros del modelo seleccionado</span>
+<span class="k">for</span> <span class="n">param</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">best_params</span><span class="p">[</span><span class="n">best_model_name</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  - </span><span class="si">{</span><span class="n">param</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>SELECCIÓN DEL MEJOR MODELO ESTRATÉGICO
+
+Criterio de Selección: Máximo F1-Score (mejor balance Precision-Recall)
+
+ Mejor Modelo: RandomForest
+
+Métricas clave en el conjunto de prueba:
+  - F1-Score  : 0.6308
+  - Recall    : 0.7513
+  - Precision : 0.5435
+  - ROC-AUC   : 0.8418
+  - Accuracy  : 0.7665
+
+Mejores hiperparámetros encontrados:
+  - classifier__bootstrap: True
+  - classifier__class_weight: balanced
+  - classifier__criterion: entropy
+  - classifier__max_depth: 10
+  - classifier__max_features: sqrt
+  - classifier__min_samples_leaf: 2
+  - classifier__min_samples_split: 5
+  - classifier__n_estimators: 200
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="guardar-modelos-y-artefactos">
+<h2>2.14 Guardar Modelos y Artefactos<a class="headerlink" href="#guardar-modelos-y-artefactos" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Crear directorio para modelos si no existe</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="s1">&#39;../app&#39;</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Guardar el mejor modelo</span>
+<span class="n">model_path</span> <span class="o">=</span> <span class="s1">&#39;../app/model.joblib&#39;</span>
+<span class="n">joblib</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">best_model</span><span class="p">,</span> <span class="n">model_path</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; Mejor modelo guardado en: </span><span class="si">{</span><span class="n">model_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Guardar todos los modelos</span>
+<span class="k">for</span> <span class="n">model_name</span><span class="p">,</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">best_models</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">model_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;../app/model_</span><span class="si">{</span><span class="n">model_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;_&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">.joblib&#39;</span>
+    <span class="n">joblib</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">model_file</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; Modelo </span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2"> guardado en: </span><span class="si">{</span><span class="n">model_file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Guardar métricas</span>
+<span class="n">metrics_path</span> <span class="o">=</span> <span class="s1">&#39;../app/model_metrics.csv&#39;</span>
+<span class="n">test_metrics_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">metrics_path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> Métricas guardadas en: </span><span class="si">{</span><span class="n">metrics_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Guardar importancia de características</span>
+<span class="k">for</span> <span class="n">model_name</span><span class="p">,</span> <span class="n">importance_df</span> <span class="ow">in</span> <span class="n">feature_importances</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">importance_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;../app/feature_importance_</span><span class="si">{</span><span class="n">model_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;_&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">.csv&#39;</span>
+    <span class="n">importance_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">importance_path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; Feature importance de </span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2"> guardada en: </span><span class="si">{</span><span class="n">importance_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot; TODOS LOS ARTEFACTOS GUARDADOS EXITOSAMENTE&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> Mejor modelo guardado en: ../app/model.joblib
+ Modelo RandomForest guardado en: ../app/model_randomforest.joblib
+ Modelo XGBoost guardado en: ../app/model_xgboost.joblib
+ Modelo CatBoost guardado en: ../app/model_catboost.joblib
+ Modelo LightGBM guardado en: ../app/model_lightgbm.joblib
+
+ Métricas guardadas en: ../app/model_metrics.csv
+ Feature importance de RandomForest guardada en: ../app/feature_importance_randomforest.csv
+ Feature importance de XGBoost guardada en: ../app/feature_importance_xgboost.csv
+ Feature importance de CatBoost guardada en: ../app/feature_importance_catboost.csv
+ Feature importance de LightGBM guardada en: ../app/feature_importance_lightgbm.csv
+ TODOS LOS ARTEFACTOS GUARDADOS EXITOSAMENTE
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="reporte-de-clasificacion-detallado">
+<h2>2.15 Reporte de Clasificación Detallado<a class="headerlink" href="#reporte-de-clasificacion-detallado" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Generar reporte de clasificación para el mejor modelo</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;REPORTE DE CLASIFICACIÓN DETALLADO - MEJOR MODELO&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Modelo: </span><span class="si">{</span><span class="n">best_model_name</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">y_pred_best</span> <span class="o">=</span> <span class="n">test_predictions</span><span class="p">[</span><span class="n">best_model_name</span><span class="p">]</span>
+<span class="n">report</span> <span class="o">=</span> <span class="n">classification_report</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred_best</span><span class="p">,</span> 
+                              <span class="n">target_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;No Churn&#39;</span><span class="p">,</span> <span class="s1">&#39;Churn&#39;</span><span class="p">],</span>
+                              <span class="n">digits</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">report</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>REPORTE DE CLASIFICACIÓN DETALLADO - MEJOR MODELO
+
+Modelo: RandomForest
+
+              precision    recall  f1-score   support
+
+    No Churn     0.8957    0.7720    0.8293      1035
+       Churn     0.5435    0.7513    0.6308       374
+
+    accuracy                         0.7665      1409
+   macro avg     0.7196    0.7617    0.7300      1409
+weighted avg     0.8022    0.7665    0.7766      1409
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="resumen-del-entrenamiento-y-evaluacion">
+<h2>2.16 Resumen del Entrenamiento y Evaluación<a class="headerlink" href="#resumen-del-entrenamiento-y-evaluacion" title="Link to this heading">#</a></h2>
+<section id="conclusiones-principales">
+<h3>Conclusiones Principales<a class="headerlink" href="#conclusiones-principales" title="Link to this heading">#</a></h3>
+<section id="modelos-entrenados">
+<h4>1. Modelos Entrenados:<a class="headerlink" href="#modelos-entrenados" title="Link to this heading">#</a></h4>
+<ul class="simple">
+<li><p>Random Forest</p></li>
+<li><p>XGBoost</p></li>
+<li><p>CatBoost</p></li>
+<li><p>LightGBM</p></li>
+</ul>
+<p>Todos los modelos fueron optimizados con GridSearchCV y validación cruzada estratificada (5 folds) para asegurar robustez.</p>
+</section>
+<section id="desempeno-y-seleccion-del-modelo">
+<h4>2. Desempeño y Selección del Modelo:<a class="headerlink" href="#desempeno-y-seleccion-del-modelo" title="Link to this heading">#</a></h4>
+<ul class="simple">
+<li><p>Todos los modelos mostraron un poder predictivo general excelente y muy similar, con un <strong>ROC-AUC superior a 0.84</strong> tanto en validación como en prueba, lo que indica una buena generalización.</p></li>
+<li><p>Sin embargo, la selección final no se basó en el ROC-AUC, sino en la métrica que mejor alinea el modelo con el objetivo de negocio: <strong>minimizar la fuga de clientes</strong>.</p></li>
+<li><p><strong>Mejor modelo seleccionado: RandomForest</strong>. Fue elegido por obtener el <strong>F1-Score más alto (0.631)</strong> y, de forma crucial, el <strong>Recall más elevado (0.751)</strong>. Esto lo convierte en la herramienta más eficaz para detectar la mayor cantidad de clientes en riesgo.</p></li>
+</ul>
+</section>
+<section id="variables-mas-importantes">
+<h4>3. Variables Más Importantes:<a class="headerlink" href="#variables-mas-importantes" title="Link to this heading">#</a></h4>
+<p>El análisis de características reveló un fuerte consenso entre los modelos. Los principales impulsores del churn son:</p>
+<ol class="arabic simple">
+<li><p><strong>Tipo de Contrato</strong> (especialmente mes a mes)</p></li>
+<li><p><strong>Antigüedad del cliente</strong> (tenure)</p></li>
+<li><p><strong>Cargos Mensuales</strong> (MonthlyCharges)</p></li>
+<li><p><strong>Servicio de Internet con Fibra Óptica</strong></p></li>
+<li><p><strong>Método de Pago con Cheque Electrónico</strong></p></li>
+</ol>
+</section>
+<section id="insights-para-el-negocio">
+<h4>4. Insights para el Negocio:<a class="headerlink" href="#insights-para-el-negocio" title="Link to this heading">#</a></h4>
+<p><strong>Perfil de Cliente con Alto Riesgo de Churn:</strong></p>
+<ul class="simple">
+<li><p>Cliente con contrato <strong>mes a mes</strong> y <strong>baja antigüedad</strong>.</p></li>
+<li><p>Utiliza <strong>Fibra Óptica</strong> y tiene <strong>cargos mensuales elevados</strong>.</p></li>
+<li><p>Paga mediante <strong>cheque electrónico</strong>.</p></li>
+<li><p>No tiene contratados servicios de valor añadido como <strong>soporte técnico o seguridad online</strong>.</p></li>
+</ul>
+<p><strong>Recomendaciones Estratégicas:</strong></p>
+<ol class="arabic simple">
+<li><p>Fidelizar a clientes nuevos con un programa de <strong>onboarding</strong> y ofrecer <strong>incentivos para contratos a largo plazo</strong>.</p></li>
+<li><p><strong>Investigar la experiencia del cliente con Fibra Óptica</strong> para entender por qué es un predictor de churn (posibles problemas de precio, estabilidad o percepción del servicio).</p></li>
+<li><p>Incentivar la adopción de <strong>métodos de pago automáticos</strong>.</p></li>
+<li><p>Promocionar <strong>paquetes de servicios</strong> que incluyan soporte y seguridad para aumentar el valor percibido y la retención.</p></li>
+</ol>
+</section>
+<section id="proximos-pasos">
+<h4>5. Próximos Pasos:<a class="headerlink" href="#proximos-pasos" title="Link to this heading">#</a></h4>
+<ul class="simple">
+<li><p>Modelos entrenados y guardados.</p></li>
+<li><p><strong>Siguiente</strong>: Interpretabilidad del modelo ganador con LIME (Notebook 3).</p></li>
+</ul>
+<hr class="docutils" />
+</section>
+</section>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./notebooks"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="1_eda_preprocessing.html"
+       title="página anterior">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">anterior</p>
+        <p class="prev-next-title">1. Exploración Inicial y Preprocesamiento de Datos</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="3_interpretability.html"
+       title="siguiente página">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">siguiente</p>
+        <p class="prev-next-title">3. Interpretabilidad de Modelos con LIME</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contenido
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prediccion-de-churn-en-telecomunicaciones">Predicción de Churn en Telecomunicaciones</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#importacion-de-librerias">2.1 Importación de Librerías</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#carga-de-datos-limpios">2.2 Carga de Datos Limpios</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#preparacion-de-variables">2.3 Preparación de Variables</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#division-de-datos-train-test">2.4 División de Datos (Train/Test)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#construccion-de-pipelines-de-preprocesamiento">2.5 Construcción de Pipelines de Preprocesamiento</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#definicion-de-modelos-y-grids-de-hiperparametros">2.6 Definición de Modelos y Grids de Hiperparámetros</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#entrenamiento-con-gridsearchcv">2.7 Entrenamiento con GridSearchCV</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#estrategia-de-busqueda"><strong>Estrategia de Búsqueda:</strong></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#comparacion-de-modelos-validacion-cruzada">2.8 Comparación de Modelos - Validación Cruzada</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#analisis-e-interpretacion-validacion-cruzada"><strong>Análisis e Interpretación: Validación Cruzada</strong></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluacion-en-conjunto-de-prueba">2.9 Evaluación en Conjunto de Prueba</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#analisis-de-resultados-y-seleccion-del-modelo-final"><strong>Análisis de Resultados y Selección del Modelo Final</strong></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#el-dilema-rendimiento-tecnico-vs-impacto-de-negocio"><strong>El Dilema: Rendimiento Técnico vs. Impacto de Negocio</strong></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#el-factor-decisivo-la-capacidad-de-deteccion-recall"><strong>El Factor Decisivo: La Capacidad de Detección (Recall)</strong></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#veredicto-final"><strong>Veredicto Final</strong></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#matrices-de-confusion">2.10 Matrices de Confusión</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#analisis-visual-matrices-de-confusion"><strong>Análisis Visual: Matrices de Confusión</strong></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#el-factor-clave-falsos-negativos-fn-la-fuga-de-ingresos"><strong>El Factor Clave: Falsos Negativos (FN) - La Fuga de Ingresos</strong></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#el-trade-off-falsos-positivos-fp-el-costo-de-campana"><strong>El Trade-Off: Falsos Positivos (FP) - El Costo de Campaña</strong></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#conclusion-visual"><strong>Conclusión Visual</strong></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#curvas-roc">2.11 Curvas ROC</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#analisis-de-curvas-roc-poder-predictivo-general"><strong>Análisis de Curvas ROC - Poder Predictivo General</strong></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#conclusion"><strong>Conclusión</strong></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#importancia-de-caracteristicas">2.12 Importancia de Características</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#analisis-de-importancia-de-caracteristicas-que-impulsa-el-churn"><strong>Análisis de Importancia de Características: ¿Qué Impulsa el Churn?</strong></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#los-3-pilares-del-churn-contrato-costo-y-calidad-del-servicio"><strong>Los 3 Pilares del Churn: Contrato, Costo y Calidad del Servicio</strong></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#la-relacion-contractual-el-predictor-1-de-lealtad"><strong>1. La Relación Contractual: El Predictor #1 de Lealtad</strong></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#el-aspecto-economico-me-estas-cobrando-mucho"><strong>2. El Aspecto Económico: «Me estás cobrando mucho»</strong></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#la-calidad-y-tipo-de-servicio-no-estoy-satisfecho"><strong>3. La Calidad y Tipo de Servicio: «No estoy satisfecho»</strong></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#conclusion-final-de-caracteristicas"><strong>Conclusión Final de Características</strong></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#seleccion-del-mejor-modelo">2.13 Selección del Mejor Modelo</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#guardar-modelos-y-artefactos">2.14 Guardar Modelos y Artefactos</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reporte-de-clasificacion-detallado">2.15 Reporte de Clasificación Detallado</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#resumen-del-entrenamiento-y-evaluacion">2.16 Resumen del Entrenamiento y Evaluación</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#conclusiones-principales">Conclusiones Principales</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#modelos-entrenados">1. Modelos Entrenados:</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#desempeno-y-seleccion-del-modelo">2. Desempeño y Selección del Modelo:</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#variables-mas-importantes">3. Variables Más Importantes:</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#insights-para-el-negocio">4. Insights para el Negocio:</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#proximos-pasos">5. Próximos Pasos:</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+Por Omar Medina & Andrés España
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2025.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

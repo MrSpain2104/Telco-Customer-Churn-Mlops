@@ -1,0 +1,1623 @@
+
+<!DOCTYPE html>
+
+
+<html lang="es" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>3. Interpretabilidad de Modelos con LIME &#8212; Telco Customer Churn - MLOps Project</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css?v=6644e6bb" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=78d55cf8"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script src="../_static/translations.js?v=d190bf04"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/3_interpretability';</script>
+    <link rel="canonical" href="https://mrspain2104.github.io/Telco-Customer-Churn-Mlops/notebooks/3_interpretability.html" />
+    <link rel="index" title="Índice" href="../genindex.html" />
+    <link rel="search" title="Búsqueda" href="../search.html" />
+    <link rel="prev" title="2. Entrenamiento y Evaluación de Modelos" href="2_model_training.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="es"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Saltar al contenido principal</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Volver arriba</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Advertencia de versión"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../intro.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Telco Customer Churn - MLOps Project</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Búsqueda" aria-label="Búsqueda" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Búsqueda</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="1_eda_preprocessing.html">1. Análisis Exploratorio y Preprocesamiento</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2_model_training.html">2. Entrenamiento de Modelos</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">3. Interpretabilidad con LIME</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/MrSpain2104/Telco-Customer-Churn-Mlops" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Repositorio de origen"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/MrSpain2104/Telco-Customer-Churn-Mlops/issues/new?title=Issue%20on%20page%20%2Fnotebooks/3_interpretability.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Abrir un problema"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Descarga esta pagina">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/notebooks/3_interpretability.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Descargar archivo fuente"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Imprimir en PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Modo de pantalla completa"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="claro/oscuro" aria-label="claro/oscuro" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Búsqueda" aria-label="Búsqueda" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>3. Interpretabilidad de Modelos con LIME</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contenido </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prediccion-de-churn-en-telecomunicaciones">Predicción de Churn en Telecomunicaciones</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#importacion-de-librerias">3.1 Importación de Librerías</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#carga-de-datos-y-modelo">3.2 Carga de Datos y Modelo</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configurar-lime-explainer">3.4 Configurar LIME Explainer</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#funcion-de-prediccion-para-lime">3.5 Función de Predicción para LIME</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#seleccion-de-casos-representativos">3.6 Selección de Casos Representativos</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#explicacion-con-lime-caso-1-alta-probabilidad-de-churn">3.7 Explicación con LIME - Caso 1: Alta Probabilidad de Churn</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#analisis-lime-caso-1-perfil-clasico-de-alto-riesgo-de-churn"><strong>Análisis LIME - Caso 1: Perfil Clásico de Alto Riesgo de Churn</strong></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#resumen-del-caso"><strong>Resumen del Caso</strong></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#perfil-del-cliente"><strong>Perfil del Cliente</strong></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#interpretacion-de-la-explicacion-lime"><strong>Interpretación de la Explicación LIME</strong></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#factores-que-aumentan-el-riesgo-de-churn-barras-verdes"><strong>Factores que AUMENTAN el Riesgo de Churn (Barras Verdes)</strong></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#factores-que-disminuyen-el-riesgo-de-churn-barras-rojas"><strong>Factores que DISMINUYEN el Riesgo de Churn (Barras Rojas)</strong></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#conclusion-y-accion-de-negocio"><strong>Conclusión y Acción de Negocio</strong></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#explicacion-con-lime-caso-2-baja-probabilidad-de-churn">3.8 Explicación con LIME - Caso 2: Baja Probabilidad de Churn</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#analisis-lime-caso-2-el-perfil-del-cliente-leal"><strong>Análisis LIME - Caso 2: El Perfil del Cliente Leal</strong></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id1"><strong>Resumen del Caso</strong></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id2"><strong>Perfil del Cliente</strong></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id3"><strong>Interpretación de la Explicación LIME</strong></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#id4"><strong>Factores que DISMINUYEN el Riesgo de Churn (Barras Rojas)</strong></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#id5"><strong>Factores que AUMENTAN el Riesgo de Churn (Barras Verdes)</strong></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id6"><strong>Conclusión y Acción de Negocio</strong></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#explicacion-con-lime-caso-3-probabilidad-borderline">3.9 Explicación con LIME - Caso 3: Probabilidad Borderline</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#analisis-lime-caso-3-el-cliente-indeciso-y-un-error-del-modelo"><strong>Análisis LIME - Caso 3: El Cliente Indeciso (y un Error del Modelo)</strong></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id7"><strong>Resumen del Caso</strong></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id8"><strong>Perfil del Cliente</strong></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id9"><strong>Interpretación de la Explicación LIME</strong></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#id10"><strong>Factores que AUMENTAN el Riesgo de Churn (Barras Verdes)</strong></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#id11"><strong>Factores que DISMINUYEN el Riesgo de Churn (Barras Rojas)</strong></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id12"><strong>Conclusión y Acción de Negocio</strong></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#comparacion-de-los-tres-casos">3.10 Comparación de los Tres Casos</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#conclusiones-finales-del-analisis-lime-de-la-confianza-a-la-oportunidad"><strong>Conclusiones Finales del Análisis LIME: De la Confianza a la Oportunidad</strong></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#interpretacion-estrategica"><strong>Interpretación Estratégica</strong></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#analisis-de-sensibilidad-que-pasa-si-cambiamos-una-caracteristica">3.11 Análisis de Sensibilidad: ¿Qué pasa si cambiamos una característica?</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#analisis-de-sensibilidad-cuantificando-el-impacto-de-la-retencion"><strong>Análisis de Sensibilidad: Cuantificando el Impacto de la Retención</strong></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#escenario-simulado-y-si-le-ofrecemos-un-contrato-a-largo-plazo"><strong>Escenario Simulado: «¿Y si le ofrecemos un contrato a largo plazo?»</strong></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#resultados-de-la-simulacion"><strong>Resultados de la Simulación</strong></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#interpretacion-y-conclusion-estrategica"><strong>Interpretación y Conclusión Estratégica</strong></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#resumen-y-conclusiones-del-analisis-de-interpretabilidad">3.12 Resumen y Conclusiones del Análisis de Interpretabilidad</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#principales-logros-del-analisis">Principales Logros del Análisis</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#impulsores-de-churn-vs-anclas-de-lealtad">Impulsores de Churn vs. Anclas de Lealtad</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#estrategias-accionables-derivadas-del-analisis">Estrategias Accionables Derivadas del Análisis</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#valor-y-consideraciones-de-lime">Valor y Consideraciones de LIME</a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="interpretabilidad-de-modelos-con-lime">
+<h1>3. Interpretabilidad de Modelos con LIME<a class="headerlink" href="#interpretabilidad-de-modelos-con-lime" title="Link to this heading">#</a></h1>
+<section id="prediccion-de-churn-en-telecomunicaciones">
+<h2>Predicción de Churn en Telecomunicaciones<a class="headerlink" href="#prediccion-de-churn-en-telecomunicaciones" title="Link to this heading">#</a></h2>
+<p><strong>Objetivo</strong>: Utilizar LIME (Local Interpretable Model-agnostic Explanations) para explicar las predicciones individuales de nuestros modelos de churn.</p>
+<ul class="simple">
+<li><p>Permite entender <strong>por qué</strong> el modelo hace una predicción específica.</p></li>
+<li><p>Identifica las características más influyentes para cada caso individual.</p></li>
+<li><p>Genera confianza en las predicciones del modelo.</p></li>
+<li><p>Ayuda a detectar posibles sesgos o errores del modelo.</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="importacion-de-librerias">
+<h2>3.1 Importación de Librerías<a class="headerlink" href="#importacion-de-librerias" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Librerías</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">lime</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">lime.lime_tabular</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">importlib.metadata</span>
+
+<span class="c1"># Scikit-learn</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.model_selection</span><span class="w"> </span><span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.preprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">StandardScaler</span><span class="p">,</span> <span class="n">OneHotEncoder</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.compose</span><span class="w"> </span><span class="kn">import</span> <span class="n">ColumnTransformer</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">joblib</span>
+<span class="c1"># Configuración</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s1">&#39;seaborn-v0_8-darkgrid&#39;</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">set_palette</span><span class="p">(</span><span class="s2">&quot;husl&quot;</span><span class="p">)</span>
+<span class="o">%</span><span class="k">matplotlib</span> inline
+
+<span class="n">RANDOM_STATE</span> <span class="o">=</span> <span class="mi">42</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">RANDOM_STATE</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="carga-de-datos-y-modelo">
+<h2>3.2 Carga de Datos y Modelo<a class="headerlink" href="#carga-de-datos-y-modelo" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Cargar dataset limpio</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;../data/telco_churn_clean.csv&#39;</span><span class="p">)</span>
+
+<span class="c1"># Preparar datos</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s1">&#39;Churn&#39;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Churn&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">map</span><span class="p">({</span><span class="s1">&#39;No&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;Yes&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+
+<span class="c1"># División train/test</span>
+<span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
+    <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">RANDOM_STATE</span><span class="p">,</span> <span class="n">stratify</span><span class="o">=</span><span class="n">y</span>
+<span class="p">)</span>
+
+<span class="c1"># Cargar el mejor modelo</span>
+<span class="n">best_model</span> <span class="o">=</span> <span class="n">joblib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;../app/model.joblib&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">   Modelo cargado exitosamente&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tipo de modelo: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">best_model</span><span class="o">.</span><span class="n">named_steps</span><span class="p">[</span><span class="s1">&#39;classifier&#39;</span><span class="p">])</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>   Modelo cargado exitosamente
+Tipo de modelo: RandomForestClassifier
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="configurar-lime-explainer">
+<h2>3.4 Configurar LIME Explainer<a class="headerlink" href="#configurar-lime-explainer" title="Link to this heading">#</a></h2>
+<p><strong>LIME</strong> requiere:</p>
+<ul class="simple">
+<li><p>Datos de entrenamiento <strong>transformados</strong> (numéricamente codificados)</p></li>
+<li><p>Nombres de las características transformadas</p></li>
+<li><p>Nombres de las clases</p></li>
+</ul>
+<p><strong>Nota importante</strong>: Como nuestro modelo usa un Pipeline con preprocesamiento (One-Hot Encoding para variables categóricas), necesitamos pasar a LIME los datos ya transformados, no los datos originales.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Obtener el preprocesador del pipeline</span>
+<span class="n">preprocessor</span> <span class="o">=</span> <span class="n">best_model</span><span class="o">.</span><span class="n">named_steps</span><span class="p">[</span><span class="s1">&#39;preprocessor&#39;</span><span class="p">]</span>
+
+<span class="c1"># Transformar los datos de entrenamiento y prueba</span>
+<span class="n">X_train_transformed</span> <span class="o">=</span> <span class="n">preprocessor</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X_train</span><span class="p">)</span>
+<span class="n">X_test_transformed</span> <span class="o">=</span> <span class="n">preprocessor</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+
+<span class="c1"># Obtener los nombres de las características después de la transformación</span>
+<span class="n">feature_names_transformed</span> <span class="o">=</span> <span class="n">preprocessor</span><span class="o">.</span><span class="n">get_feature_names_out</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;TRANSFORMACIÓN DE DATOS PARA LIME&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; Datos transformados correctamente&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Dimensiones originales: </span><span class="si">{</span><span class="n">X_train</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dimensiones transformadas: </span><span class="si">{</span><span class="n">X_train_transformed</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Número de características después de One-Hot Encoding: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">feature_names_transformed</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Primeras 10 características transformadas:&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">feature_names_transformed</span><span class="p">[:</span><span class="mi">10</span><span class="p">]):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">. </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>TRANSFORMACIÓN DE DATOS PARA LIME
+ Datos transformados correctamente
+
+Dimensiones originales: (5634, 19)
+Dimensiones transformadas: (5634, 30)
+
+Número de características después de One-Hot Encoding: 30
+
+Primeras 10 características transformadas:
+  1. num__SeniorCitizen
+  2. num__tenure
+  3. num__MonthlyCharges
+  4. num__TotalCharges
+  5. cat__gender_Male
+  6. cat__Partner_Yes
+  7. cat__Dependents_Yes
+  8. cat__PhoneService_Yes
+  9. cat__MultipleLines_No phone service
+  10. cat__MultipleLines_Yes
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Crear el explainer de LIME con datos transformados</span>
+<span class="n">explainer</span> <span class="o">=</span> <span class="n">lime</span><span class="o">.</span><span class="n">lime_tabular</span><span class="o">.</span><span class="n">LimeTabularExplainer</span><span class="p">(</span>
+    <span class="n">training_data</span><span class="o">=</span><span class="n">X_train_transformed</span><span class="p">,</span>
+    <span class="n">feature_names</span><span class="o">=</span><span class="n">feature_names_transformed</span><span class="p">,</span>
+    <span class="n">class_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;No Churn&#39;</span><span class="p">,</span> <span class="s1">&#39;Churn&#39;</span><span class="p">],</span>
+    <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;classification&#39;</span><span class="p">,</span>
+    <span class="n">random_state</span><span class="o">=</span><span class="n">RANDOM_STATE</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Características:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  - Número de features transformadas: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">feature_names_transformed</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  - Número de muestras de entrenamiento: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">X_train_transformed</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  - Clases: [&#39;No Churn&#39;, &#39;Churn&#39;]&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  - Modo: classification&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Características:
+  - Número de features transformadas: 30
+  - Número de muestras de entrenamiento: 5634
+  - Clases: [&#39;No Churn&#39;, &#39;Churn&#39;]
+  - Modo: classification
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="funcion-de-prediccion-para-lime">
+<h2>3.5 Función de Predicción para LIME<a class="headerlink" href="#funcion-de-prediccion-para-lime" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Crear función de predicción compatible con LIME</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">predict_fn</span><span class="p">(</span><span class="n">X_transformed_array</span><span class="p">):</span>
+    <span class="c1"># El clasificador ya espera datos transformados</span>
+    <span class="n">classifier</span> <span class="o">=</span> <span class="n">best_model</span><span class="o">.</span><span class="n">named_steps</span><span class="p">[</span><span class="s1">&#39;classifier&#39;</span><span class="p">]</span>
+    <span class="n">probas</span> <span class="o">=</span> <span class="n">classifier</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X_transformed_array</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">probas</span>
+
+<span class="c1"># Verificar que funciona</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;VERIFICACIÓN DE LA FUNCIÓN DE PREDICCIÓN&quot;</span><span class="p">)</span>
+<span class="n">sample</span> <span class="o">=</span> <span class="n">X_train_transformed</span><span class="p">[:</span><span class="mi">5</span><span class="p">]</span>
+<span class="n">predictions</span> <span class="o">=</span> <span class="n">predict_fn</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; Función de predicción funcionando correctamente&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Ejemplo de predicción para 5 muestras:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">predictions</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Forma de salida: </span><span class="si">{</span><span class="n">predictions</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>VERIFICACIÓN DE LA FUNCIÓN DE PREDICCIÓN
+ Función de predicción funcionando correctamente
+
+Ejemplo de predicción para 5 muestras:
+[[0.64778112 0.35221888]
+ [0.60604446 0.39395554]
+ [0.94960091 0.05039909]
+ [0.88976865 0.11023135]
+ [0.30816248 0.69183752]]
+
+Forma de salida: (5, 2)
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="seleccion-de-casos-representativos">
+<h2>3.6 Selección de Casos Representativos<a class="headerlink" href="#seleccion-de-casos-representativos" title="Link to this heading">#</a></h2>
+<p>Vamos a seleccionar 3 casos representativos para analizar:</p>
+<ol class="arabic simple">
+<li><p><strong>Caso 1</strong>: Cliente con <strong>alta probabilidad de churn</strong> (predicción correcta)</p></li>
+<li><p><strong>Caso 2</strong>: Cliente con <strong>baja probabilidad de churn</strong> (predicción correcta)</p></li>
+<li><p><strong>Caso 3</strong>: Cliente con predicción <strong>borderline</strong> (probabilidad ~0.5)</p></li>
+</ol>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Obtener predicciones para todo el conjunto de prueba (usando el modelo completo)</span>
+<span class="n">y_pred</span> <span class="o">=</span> <span class="n">best_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+<span class="n">y_proba</span> <span class="o">=</span> <span class="n">best_model</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X_test</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">]</span>
+
+<span class="c1"># Crear DataFrame con predicciones</span>
+<span class="n">predictions_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+    <span class="s1">&#39;Index&#39;</span><span class="p">:</span> <span class="n">X_test</span><span class="o">.</span><span class="n">index</span><span class="p">,</span>
+    <span class="s1">&#39;True_Label&#39;</span><span class="p">:</span> <span class="n">y_test</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+    <span class="s1">&#39;Predicted_Label&#39;</span><span class="p">:</span> <span class="n">y_pred</span><span class="p">,</span>
+    <span class="s1">&#39;Churn_Probability&#39;</span><span class="p">:</span> <span class="n">y_proba</span><span class="p">,</span>
+    <span class="s1">&#39;Correct&#39;</span><span class="p">:</span> <span class="n">y_test</span><span class="o">.</span><span class="n">values</span> <span class="o">==</span> <span class="n">y_pred</span>
+<span class="p">})</span>
+
+<span class="c1"># Caso 1: Alta probabilidad de churn (correcto)</span>
+<span class="n">high_churn</span> <span class="o">=</span> <span class="n">predictions_df</span><span class="p">[(</span><span class="n">predictions_df</span><span class="p">[</span><span class="s1">&#39;True_Label&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span> 
+                            <span class="p">(</span><span class="n">predictions_df</span><span class="p">[</span><span class="s1">&#39;Correct&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="kc">True</span><span class="p">)</span> <span class="o">&amp;</span> 
+                            <span class="p">(</span><span class="n">predictions_df</span><span class="p">[</span><span class="s1">&#39;Churn_Probability&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.8</span><span class="p">)]</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># Caso 2: Baja probabilidad de churn (correcto)</span>
+<span class="n">low_churn</span> <span class="o">=</span> <span class="n">predictions_df</span><span class="p">[(</span><span class="n">predictions_df</span><span class="p">[</span><span class="s1">&#39;True_Label&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> 
+                           <span class="p">(</span><span class="n">predictions_df</span><span class="p">[</span><span class="s1">&#39;Correct&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="kc">True</span><span class="p">)</span> <span class="o">&amp;</span> 
+                           <span class="p">(</span><span class="n">predictions_df</span><span class="p">[</span><span class="s1">&#39;Churn_Probability&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">0.2</span><span class="p">)]</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># Caso 3: Probabilidad borderline</span>
+<span class="n">borderline</span> <span class="o">=</span> <span class="n">predictions_df</span><span class="p">[(</span><span class="n">predictions_df</span><span class="p">[</span><span class="s1">&#39;Churn_Probability&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.45</span><span class="p">)</span> <span class="o">&amp;</span> 
+                            <span class="p">(</span><span class="n">predictions_df</span><span class="p">[</span><span class="s1">&#39;Churn_Probability&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">0.55</span><span class="p">)]</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># Combinar casos</span>
+<span class="n">selected_cases</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">high_churn</span><span class="p">,</span> <span class="n">low_churn</span><span class="p">,</span> <span class="n">borderline</span><span class="p">])</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;CASOS SELECCIONADOS PARA EXPLICACIÓN&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">selected_cases</span><span class="p">[[</span><span class="s1">&#39;Index&#39;</span><span class="p">,</span> <span class="s1">&#39;True_Label&#39;</span><span class="p">,</span> <span class="s1">&#39;Predicted_Label&#39;</span><span class="p">,</span> <span class="s1">&#39;Churn_Probability&#39;</span><span class="p">,</span> <span class="s1">&#39;Correct&#39;</span><span class="p">]])</span>
+
+<span class="c1"># Guardar índices y obtener las posiciones en X_test</span>
+<span class="n">case_indices</span> <span class="o">=</span> <span class="n">selected_cases</span><span class="p">[</span><span class="s1">&#39;Index&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+<span class="n">case_positions</span> <span class="o">=</span> <span class="p">[</span><span class="n">X_test</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_loc</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">case_indices</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Índices de casos: </span><span class="si">{</span><span class="n">case_indices</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>    
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Posiciones en X_test: </span><span class="si">{</span><span class="n">case_positions</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CASOS SELECCIONADOS PARA EXPLICACIÓN
+    Index  True_Label  Predicted_Label  Churn_Probability  Correct
+20   6529           1                1           0.848986     True
+0     437           0                0           0.020957     True
+3    4460           0                1           0.541133    False
+
+Índices de casos: [6529, 437, 4460]
+Posiciones en X_test: [20, 0, 3]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="explicacion-con-lime-caso-1-alta-probabilidad-de-churn">
+<h2>3.7 Explicación con LIME - Caso 1: Alta Probabilidad de Churn<a class="headerlink" href="#explicacion-con-lime-caso-1-alta-probabilidad-de-churn" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Seleccionar el primer caso</span>
+<span class="n">case_idx_1</span> <span class="o">=</span> <span class="n">case_indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">case_pos_1</span> <span class="o">=</span> <span class="n">case_positions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">instance_1_transformed</span> <span class="o">=</span> <span class="n">X_test_transformed</span><span class="p">[</span><span class="n">case_pos_1</span><span class="p">]</span>
+<span class="n">instance_1_original</span> <span class="o">=</span> <span class="n">X_test</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">case_pos_1</span><span class="p">]</span>
+<span class="n">true_label_1</span> <span class="o">=</span> <span class="n">y_test</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">case_pos_1</span><span class="p">]</span>
+<span class="n">pred_proba_1</span> <span class="o">=</span> <span class="n">y_proba</span><span class="p">[</span><span class="n">case_pos_1</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;CASO 1: CLIENTE CON ALTA PROBABILIDAD DE CHURN&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Índice del cliente: </span><span class="si">{</span><span class="n">case_idx_1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Etiqueta real: </span><span class="si">{</span><span class="s1">&#39;Churn&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">true_label_1</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;No Churn&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Probabilidad de Churn predicha: </span><span class="si">{</span><span class="n">pred_proba_1</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">pred_proba_1</span><span class="o">*</span><span class="mi">100</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">%)&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Características originales del cliente:&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">X_test</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="n">instance_1_original</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">val</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Generar explicación con LIME (usando datos transformados)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Explicación con LIME&quot;</span><span class="p">)</span>
+
+<span class="n">explanation_1</span> <span class="o">=</span> <span class="n">explainer</span><span class="o">.</span><span class="n">explain_instance</span><span class="p">(</span>
+    <span class="n">data_row</span><span class="o">=</span><span class="n">instance_1_transformed</span><span class="p">,</span>
+    <span class="n">predict_fn</span><span class="o">=</span><span class="n">predict_fn</span><span class="p">,</span>
+    <span class="n">num_features</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">top_labels</span><span class="o">=</span><span class="mi">2</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot; Explicación generada exitosamente&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CASO 1: CLIENTE CON ALTA PROBABILIDAD DE CHURN
+Índice del cliente: 6529
+Etiqueta real: Churn
+Probabilidad de Churn predicha: 0.8490 (84.90%)
+
+Características originales del cliente:
+  gender: Male
+  SeniorCitizen: 1
+  Partner: No
+  Dependents: No
+  tenure: 2
+  PhoneService: Yes
+  MultipleLines: Yes
+  InternetService: Fiber optic
+  OnlineSecurity: No
+  OnlineBackup: No
+  DeviceProtection: No
+  TechSupport: No
+  StreamingTV: No
+  StreamingMovies: No
+  Contract: Month-to-month
+  PaperlessBilling: Yes
+  PaymentMethod: Mailed check
+  MonthlyCharges: 74.85
+  TotalCharges: 156.4
+Explicación con LIME
+ Explicación generada exitosamente
+ Explicación generada exitosamente
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Visualizar explicación - Caso 1</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">explanation_1</span><span class="o">.</span><span class="n">as_pyplot_figure</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Explicación LIME - Caso 1: Alta Probabilidad de Churn&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/1e202324f3b8263bb02e4f7b88146d03da07113721394b85c7e905da212ae2cb.png" src="../_images/1e202324f3b8263bb02e4f7b88146d03da07113721394b85c7e905da212ae2cb.png" />
+</div>
+</div>
+<section id="analisis-lime-caso-1-perfil-clasico-de-alto-riesgo-de-churn">
+<h3><strong>Análisis LIME - Caso 1: Perfil Clásico de Alto Riesgo de Churn</strong><a class="headerlink" href="#analisis-lime-caso-1-perfil-clasico-de-alto-riesgo-de-churn" title="Link to this heading">#</a></h3>
+<section id="resumen-del-caso">
+<h4><strong>Resumen del Caso</strong><a class="headerlink" href="#resumen-del-caso" title="Link to this heading">#</a></h4>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>Índice Cliente</p></th>
+<th class="head text-center"><p>Etiqueta Real</p></th>
+<th class="head text-center"><p>Predicción del Modelo</p></th>
+<th class="head text-center"><p>Probabilidad de Churn</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p>6529</p></td>
+<td class="text-center"><p>Churn</p></td>
+<td class="text-center"><p>Churn</p></td>
+<td class="text-center"><p><strong>84.90%</strong></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>El modelo predijo correctamente que este cliente se daría de baja, y lo hizo con un alto grado de confianza. LIME nos ayudará a entender exactamente qué características llevaron al modelo a esta conclusión.</p>
+</section>
+<section id="perfil-del-cliente">
+<h4><strong>Perfil del Cliente</strong><a class="headerlink" href="#perfil-del-cliente" title="Link to this heading">#</a></h4>
+<p>Analizando sus datos originales, vemos un patrón muy claro:</p>
+<ul class="simple">
+<li><p><strong>Contrato:</strong> Mes a mes</p></li>
+<li><p><strong>Antigüedad (Tenure):</strong> Muy baja (solo 2 meses)</p></li>
+<li><p><strong>Internet:</strong> Fibra Óptica</p></li>
+<li><p><strong>Servicios Adicionales:</strong> No tiene contratado ninguno (sin seguridad, sin soporte técnico, etc.)</p></li>
+<li><p><strong>Datos Demográficos:</strong> Es un ciudadano senior, sin pareja ni dependientes.</p></li>
+</ul>
+</section>
+<section id="interpretacion-de-la-explicacion-lime">
+<h4><strong>Interpretación de la Explicación LIME</strong><a class="headerlink" href="#interpretacion-de-la-explicacion-lime" title="Link to this heading">#</a></h4>
+<p>LIME confirma de manera contundente que el modelo ha identificado a este cliente como un caso de churn «de manual», basándose en los factores que ya habíamos identificado como críticos en el análisis visto anteriormente.</p>
+<section id="factores-que-aumentan-el-riesgo-de-churn-barras-verdes">
+<h5><strong>Factores que AUMENTAN el Riesgo de Churn (Barras Verdes)</strong><a class="headerlink" href="#factores-que-aumentan-el-riesgo-de-churn-barras-verdes" title="Link to this heading">#</a></h5>
+<ol class="arabic simple">
+<li><p><strong>Ausencia de Contrato a Largo Plazo (<code class="docutils literal notranslate"><span class="pre">Contract_Two</span> <span class="pre">year</span> <span class="pre">&lt;=</span> <span class="pre">0.00</span></code>):</strong> Este es el factor más influyente. El hecho de no tener un contrato de dos años (y tampoco de un año, que es el cuarto factor más importante) le da al cliente la flexibilidad de irse en cualquier momento. El modelo lo identifica correctamente como el principal indicador de riesgo.</p></li>
+<li><p><strong>Antigüedad Muy Baja (<code class="docutils literal notranslate"><span class="pre">tenure</span> <span class="pre">&lt;=</span> <span class="pre">-0.96</span></code>):</strong> Con solo 2 meses, el cliente no ha desarrollado lealtad. Es el segundo factor más importante y refuerza la idea de que los primeros meses son críticos para la retención.</p></li>
+<li><p><strong>Servicio de Fibra Óptica (<code class="docutils literal notranslate"><span class="pre">InternetService_Fiber</span> <span class="pre">optic</span></code>):</strong> Confirma nuestra sospecha de que este servicio, aunque premium, está fuertemente asociado al churn. Para este cliente, tener fibra óptica empuja significativamente la predicción hacia la baja.</p></li>
+<li><p><strong>Falta de Servicios de Valor Añadido (<code class="docutils literal notranslate"><span class="pre">OnlineSecurity_Yes</span> <span class="pre">&lt;=</span> <span class="pre">0.00</span></code>, <code class="docutils literal notranslate"><span class="pre">TechSupport_Yes</span> <span class="pre">&lt;=</span> <span class="pre">0.00</span></code>):</strong> El modelo interpreta la ausencia de estos servicios como una señal de que el cliente no está «invertido» en el ecosistema de la empresa, lo que facilita su salida.</p></li>
+</ol>
+</section>
+<section id="factores-que-disminuyen-el-riesgo-de-churn-barras-rojas">
+<h5><strong>Factores que DISMINUYEN el Riesgo de Churn (Barras Rojas)</strong><a class="headerlink" href="#factores-que-disminuyen-el-riesgo-de-churn-barras-rojas" title="Link to this heading">#</a></h5>
+<ul class="simple">
+<li><p><strong>Método de Pago (<code class="docutils literal notranslate"><span class="pre">PaymentMethod_Electronic</span> <span class="pre">check</span> <span class="pre">&lt;=</span> <span class="pre">0.00</span></code>):</strong> Curiosamente, el único factor que juega ligeramente a su favor es <strong>no</strong> usar “Cheque Electrónico”. Como vimos en el análisis global, el pago con cheque electrónico era un predictor de churn. Al no usarlo, este cliente elimina uno de los pequeños factores de riesgo, aunque su efecto es mínimo comparado con el peso abrumador de los factores negativos.</p></li>
+</ul>
+</section>
+</section>
+<section id="conclusion-y-accion-de-negocio">
+<h4><strong>Conclusión y Acción de Negocio</strong><a class="headerlink" href="#conclusion-y-accion-de-negocio" title="Link to this heading">#</a></h4>
+<p>Este cliente es el arquetipo del <strong>«buscador de ofertas»</strong>: se une por una promoción, contrata un servicio rápido (Fibra), no se compromete a largo plazo y no se integra en el ecosistema de la empresa.</p>
+<p>La predicción del modelo no solo es correcta, sino que las razones son completamente lógicas. Para un cliente con este perfil, una intervención proactiva podría incluir:</p>
+<ul class="simple">
+<li><p>Una <strong>oferta exclusiva para firmar un contrato de 1 año</strong> a cambio de un descuento en su tarifa mensual.</p></li>
+<li><p>Ofrecerle un paquete de <strong><code class="docutils literal notranslate"><span class="pre">OnlineSecurity</span></code> gratuito durante 3 meses</strong> para aumentar su dependencia de nuestros servicios y demostrar valor añadido.</p></li>
+</ul>
+</section>
+</section>
+</section>
+<section id="explicacion-con-lime-caso-2-baja-probabilidad-de-churn">
+<h2>3.8 Explicación con LIME - Caso 2: Baja Probabilidad de Churn<a class="headerlink" href="#explicacion-con-lime-caso-2-baja-probabilidad-de-churn" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Seleccionar el segundo caso</span>
+<span class="n">case_idx_2</span> <span class="o">=</span> <span class="n">case_indices</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">case_pos_2</span> <span class="o">=</span> <span class="n">case_positions</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">instance_2_transformed</span> <span class="o">=</span> <span class="n">X_test_transformed</span><span class="p">[</span><span class="n">case_pos_2</span><span class="p">]</span>
+<span class="n">instance_2_original</span> <span class="o">=</span> <span class="n">X_test</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">case_pos_2</span><span class="p">]</span>
+<span class="n">true_label_2</span> <span class="o">=</span> <span class="n">y_test</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">case_pos_2</span><span class="p">]</span>
+<span class="n">pred_proba_2</span> <span class="o">=</span> <span class="n">y_proba</span><span class="p">[</span><span class="n">case_pos_2</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;CASO 2: CLIENTE CON BAJA PROBABILIDAD DE CHURN&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Índice del cliente: </span><span class="si">{</span><span class="n">case_idx_2</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Etiqueta real: </span><span class="si">{</span><span class="s1">&#39;Churn&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">true_label_2</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;No Churn&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Probabilidad de Churn predicha: </span><span class="si">{</span><span class="n">pred_proba_2</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">pred_proba_2</span><span class="o">*</span><span class="mi">100</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">%)&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Características originales del cliente:&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">X_test</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="n">instance_2_original</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">val</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Generar explicación con LIME</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Explicación con LIME&quot;</span><span class="p">)</span>
+
+<span class="n">explanation_2</span> <span class="o">=</span> <span class="n">explainer</span><span class="o">.</span><span class="n">explain_instance</span><span class="p">(</span>
+    <span class="n">data_row</span><span class="o">=</span><span class="n">instance_2_transformed</span><span class="p">,</span>
+    <span class="n">predict_fn</span><span class="o">=</span><span class="n">predict_fn</span><span class="p">,</span>
+    <span class="n">num_features</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">top_labels</span><span class="o">=</span><span class="mi">2</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CASO 2: CLIENTE CON BAJA PROBABILIDAD DE CHURN
+Índice del cliente: 437
+Etiqueta real: No Churn
+Probabilidad de Churn predicha: 0.0210 (2.10%)
+
+Características originales del cliente:
+  gender: Male
+  SeniorCitizen: 0
+  Partner: Yes
+  Dependents: Yes
+  tenure: 72
+  PhoneService: Yes
+  MultipleLines: Yes
+  InternetService: Fiber optic
+  OnlineSecurity: Yes
+  OnlineBackup: Yes
+  DeviceProtection: Yes
+  TechSupport: Yes
+  StreamingTV: Yes
+  StreamingMovies: Yes
+  Contract: Two year
+  PaperlessBilling: Yes
+  PaymentMethod: Credit card (automatic)
+  MonthlyCharges: 114.05
+  TotalCharges: 8468.2
+Explicación con LIME
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Visualizar explicación - Caso 2</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">explanation_2</span><span class="o">.</span><span class="n">as_pyplot_figure</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Explicación LIME - Caso 2: Baja Probabilidad de Churn&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/fa05d3143d6ba8c55d0dd77c4fffaf14c2dce15522f24e9f6d260ebee74f2b4a.png" src="../_images/fa05d3143d6ba8c55d0dd77c4fffaf14c2dce15522f24e9f6d260ebee74f2b4a.png" />
+</div>
+</div>
+<section id="analisis-lime-caso-2-el-perfil-del-cliente-leal">
+<h3><strong>Análisis LIME - Caso 2: El Perfil del Cliente Leal</strong><a class="headerlink" href="#analisis-lime-caso-2-el-perfil-del-cliente-leal" title="Link to this heading">#</a></h3>
+<section id="id1">
+<h4><strong>Resumen del Caso</strong><a class="headerlink" href="#id1" title="Link to this heading">#</a></h4>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>Índice Cliente</p></th>
+<th class="head text-center"><p>Etiqueta Real</p></th>
+<th class="head text-center"><p>Predicción del Modelo</p></th>
+<th class="head text-center"><p>Probabilidad de Churn</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p>437</p></td>
+<td class="text-center"><p>No Churn</p></td>
+<td class="text-center"><p>No Churn</p></td>
+<td class="text-center"><p><strong>2.10%</strong></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>En este caso, el modelo predijo correctamente que el cliente no se iría, y lo hizo con una confianza abrumadora (97.9% de probabilidad de quedarse). LIME nos muestra qué características le dan al modelo esta certeza.</p>
+</section>
+<section id="id2">
+<h4><strong>Perfil del Cliente</strong><a class="headerlink" href="#id2" title="Link to this heading">#</a></h4>
+<p>Este cliente es la antítesis del caso anterior. Es un cliente de alto valor y profundamente integrado:</p>
+<ul class="simple">
+<li><p><strong>Contrato:</strong> Dos años</p></li>
+<li><p><strong>Antigüedad (Tenure):</strong> Máxima (72 meses)</p></li>
+<li><p><strong>Servicios Adicionales:</strong> Tiene contratado <strong>todo</strong> el catálogo de servicios (seguridad, backup, soporte, etc.).</p></li>
+<li><p><strong>Método de Pago:</strong> Tarjeta de crédito (automático).</p></li>
+<li><p><strong>Internet:</strong> Fibra Óptica (con un cargo mensual elevado).</p></li>
+</ul>
+</section>
+<section id="id3">
+<h4><strong>Interpretación de la Explicación LIME</strong><a class="headerlink" href="#id3" title="Link to this heading">#</a></h4>
+<p>El gráfico de LIME muestra una «batalla» entre factores de lealtad muy fuertes y factores de riesgo conocidos. Afortunadamente para la empresa, los factores de lealtad ganan por goleada.</p>
+<section id="id4">
+<h5><strong>Factores que DISMINUYEN el Riesgo de Churn (Barras Rojas)</strong><a class="headerlink" href="#id4" title="Link to this heading">#</a></h5>
+<ol class="arabic simple">
+<li><p><strong>Contrato de Dos Años (<code class="docutils literal notranslate"><span class="pre">Contract_Two</span> <span class="pre">year</span> <span class="pre">&gt;</span> <span class="pre">0.00</span></code>):</strong> De nuevo, el contrato es el rey. Este es el factor más poderoso que empuja la predicción hacia “No Churn”. El modelo ha aprendido que un compromiso de dos años es la señal de lealtad definitiva.</p></li>
+<li><p><strong>Antigüedad Máxima (<code class="docutils literal notranslate"><span class="pre">tenure</span> <span class="pre">&gt;</span> <span class="pre">0.92</span></code>):</strong> Este cliente, con 72 meses, se encuentra en el extremo más alto de la escala. Su larga historia con la compañía es la segunda señal más fuerte de que se quedará.</p></li>
+<li><p><strong>Integración en el Ecosistema (<code class="docutils literal notranslate"><span class="pre">TechSupport_Yes</span></code>, <code class="docutils literal notranslate"><span class="pre">OnlineSecurity_Yes</span></code>):</strong> A diferencia del caso anterior, este cliente utiliza múltiples servicios de valor añadido. El modelo interpreta esto como una alta dependencia y satisfacción con el ecosistema de la empresa, reduciendo la probabilidad de que se vaya.</p></li>
+</ol>
+</section>
+<section id="id5">
+<h5><strong>Factores que AUMENTAN el Riesgo de Churn (Barras Verdes)</strong><a class="headerlink" href="#id5" title="Link to this heading">#</a></h5>
+<p>Aquí es donde el análisis se pone interesante, ya que nos muestra las «presiones negativas» que incluso un cliente leal puede tener.</p>
+<ol class="arabic simple">
+<li><p><strong>Servicio de Fibra Óptica (<code class="docutils literal notranslate"><span class="pre">InternetService_Fiber</span> <span class="pre">optic</span></code>):</strong> Este es el hallazgo más importante. <strong>Incluso para un cliente completamente leal, tener Fibra Óptica sigue siendo el principal factor de riesgo.</strong> Esto refuerza la idea de que este producto, ya sea por su precio o por la percepción del servicio, ejerce una presión constante hacia el churn en todos los segmentos de clientes.</p></li>
+<li><p><strong>Cargos Mensuales Elevados (<code class="docutils literal notranslate"><span class="pre">MonthlyCharges</span> <span class="pre">&gt;</span> <span class="pre">0.83</span></code>):</strong> Lógicamente, pagar una factura alta ($114.05) siempre será un factor que empuje, aunque sea ligeramente, a un cliente a reconsiderar su proveedor.</p></li>
+</ol>
+</section>
+</section>
+<section id="id6">
+<h4><strong>Conclusión y Acción de Negocio</strong><a class="headerlink" href="#id6" title="Link to this heading">#</a></h4>
+<p>Este cliente representa el <strong>perfil ideal de cliente retenido</strong>: comprometido a largo plazo y completamente integrado en la oferta de servicios. Las fuerzas que lo empujan a quedarse (contrato y antigüedad) son mucho más poderosas que las que lo empujan a irse (precio alto y tipo de internet).</p>
+<p>La acción de negocio aquí no es de retención, sino de <strong>estrategia y replicación</strong>:</p>
+<ul class="simple">
+<li><p><strong>Validación de Estrategia:</strong> Este perfil valida que la estrategia de vender contratos a largo plazo y hacer «upselling» de servicios de valor añadido es extremadamente efectiva para la retención.</p></li>
+<li><p><strong>Público Objetivo:</strong> Este perfil debe ser el objetivo para las campañas de «upselling» dirigidas a clientes más nuevos. El objetivo es convertir a los clientes del «Caso 1» en clientes del «Caso 2».</p></li>
+</ul>
+</section>
+</section>
+</section>
+<section id="explicacion-con-lime-caso-3-probabilidad-borderline">
+<h2>3.9 Explicación con LIME - Caso 3: Probabilidad Borderline<a class="headerlink" href="#explicacion-con-lime-caso-3-probabilidad-borderline" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Seleccionar el tercer caso</span>
+<span class="n">case_idx_3</span> <span class="o">=</span> <span class="n">case_indices</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">case_pos_3</span> <span class="o">=</span> <span class="n">case_positions</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">instance_3_transformed</span> <span class="o">=</span> <span class="n">X_test_transformed</span><span class="p">[</span><span class="n">case_pos_3</span><span class="p">]</span>
+<span class="n">instance_3_original</span> <span class="o">=</span> <span class="n">X_test</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">case_pos_3</span><span class="p">]</span>
+<span class="n">true_label_3</span> <span class="o">=</span> <span class="n">y_test</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">case_pos_3</span><span class="p">]</span>
+<span class="n">pred_proba_3</span> <span class="o">=</span> <span class="n">y_proba</span><span class="p">[</span><span class="n">case_pos_3</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;CASO 3: CLIENTE CON PROBABILIDAD BORDERLINE (INCIERTO)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="o">*</span><span class="mi">80</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Índice del cliente: </span><span class="si">{</span><span class="n">case_idx_3</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Etiqueta real: </span><span class="si">{</span><span class="s1">&#39;Churn&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">true_label_3</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;No Churn&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Probabilidad de Churn predicha: </span><span class="si">{</span><span class="n">pred_proba_3</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">pred_proba_3</span><span class="o">*</span><span class="mi">100</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">%)&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Características originales del cliente:&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">X_test</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="n">instance_3_original</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">val</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Generar explicación con LIME</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Explicación con LIME&quot;</span><span class="p">)</span>
+
+<span class="n">explanation_3</span> <span class="o">=</span> <span class="n">explainer</span><span class="o">.</span><span class="n">explain_instance</span><span class="p">(</span>
+    <span class="n">data_row</span><span class="o">=</span><span class="n">instance_3_transformed</span><span class="p">,</span>
+    <span class="n">predict_fn</span><span class="o">=</span><span class="n">predict_fn</span><span class="p">,</span>
+    <span class="n">num_features</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">top_labels</span><span class="o">=</span><span class="mi">2</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CASO 3: CLIENTE CON PROBABILIDAD BORDERLINE (INCIERTO)
+================================================================================
+Índice del cliente: 4460
+Etiqueta real: No Churn
+Probabilidad de Churn predicha: 0.5411 (54.11%)
+
+Características originales del cliente:
+  gender: Male
+  SeniorCitizen: 0
+  Partner: Yes
+  Dependents: No
+  tenure: 18
+  PhoneService: Yes
+  MultipleLines: No
+  InternetService: Fiber optic
+  OnlineSecurity: No
+  OnlineBackup: No
+  DeviceProtection: Yes
+  TechSupport: Yes
+  StreamingTV: No
+  StreamingMovies: No
+  Contract: Month-to-month
+  PaperlessBilling: No
+  PaymentMethod: Electronic check
+  MonthlyCharges: 78.2
+  TotalCharges: 1468.75
+
+================================================================================
+Generando explicación con LIME...
+✓ Explicación generada exitosamente
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Visualizar explicación - Caso 3</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">explanation_3</span><span class="o">.</span><span class="n">as_pyplot_figure</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Explicación LIME - Caso 3: Probabilidad Borderline (~50%)&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/5b980070eb79956edaabe3e7e4bd560da52826d5f1aa7a1478cb4b50143a26b8.png" src="../_images/5b980070eb79956edaabe3e7e4bd560da52826d5f1aa7a1478cb4b50143a26b8.png" />
+</div>
+</div>
+<section id="analisis-lime-caso-3-el-cliente-indeciso-y-un-error-del-modelo">
+<h3><strong>Análisis LIME - Caso 3: El Cliente Indeciso (y un Error del Modelo)</strong><a class="headerlink" href="#analisis-lime-caso-3-el-cliente-indeciso-y-un-error-del-modelo" title="Link to this heading">#</a></h3>
+<section id="id7">
+<h4><strong>Resumen del Caso</strong><a class="headerlink" href="#id7" title="Link to this heading">#</a></h4>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>Índice Cliente</p></th>
+<th class="head text-center"><p>Etiqueta Real</p></th>
+<th class="head text-center"><p>Predicción del Modelo</p></th>
+<th class="head text-center"><p>Probabilidad de Churn</p></th>
+<th class="head text-center"><p>Resultado</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p>4460</p></td>
+<td class="text-center"><p><strong>No Churn</strong></p></td>
+<td class="text-center"><p>Churn</p></td>
+<td class="text-center"><p><strong>54.11%</strong></p></td>
+<td class="text-center"><p><strong>Falso Positivo</strong></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Este caso es el más instructivo porque revela los límites del modelo y destaca el perfil de un cliente «en la cuerda floja». El modelo predijo que se iría (apenas por encima del umbral del 50%), pero en realidad, el cliente se quedó. LIME nos muestra el «tira y afloja» de características que causó esta incertidumbre y el eventual error.</p>
+</section>
+<section id="id8">
+<h4><strong>Perfil del Cliente</strong><a class="headerlink" href="#id8" title="Link to this heading">#</a></h4>
+<p>Este cliente presenta una mezcla de características de alto riesgo y de lealtad:</p>
+<ul class="simple">
+<li><p><strong>Factores de Riesgo:</strong> Contrato mes a mes, usa Fibra Óptica, paga con cheque electrónico, no tiene seguridad online.</p></li>
+<li><p><strong>Factores de Lealtad:</strong> Antigüedad media (18 meses), tiene soporte técnico y protección de dispositivos.</p></li>
+</ul>
+</section>
+<section id="id9">
+<h4><strong>Interpretación de la Explicación LIME</strong><a class="headerlink" href="#id9" title="Link to this heading">#</a></h4>
+<p>El gráfico de LIME visualiza perfectamente esta batalla interna. Hay muchas razones (verdes) para que el cliente se vaya, pero un par de razones importantes (rojas) para que se quede.</p>
+<section id="id10">
+<h5><strong>Factores que AUMENTAN el Riesgo de Churn (Barras Verdes)</strong><a class="headerlink" href="#id10" title="Link to this heading">#</a></h5>
+<ol class="arabic simple">
+<li><p><strong>Ausencia de Contrato a Largo Plazo (<code class="docutils literal notranslate"><span class="pre">Contract_Two</span> <span class="pre">year</span> <span class="pre">&lt;=</span> <span class="pre">0.00</span></code>):</strong> Una vez más, este es el principal motor del riesgo. Al ser un cliente mes a mes, el modelo lo penaliza fuertemente.</p></li>
+<li><p><strong>Servicio de Fibra Óptica (<code class="docutils literal notranslate"><span class="pre">InternetService_Fiber</span> <span class="pre">optic</span></code>):</strong> Es el segundo factor de riesgo más grande, lo que consolida su estatus como un producto problemático para la retención.</p></li>
+<li><p><strong>Pago con Cheque Electrónico y Sin Seguridad Online:</strong> Estos dos factores, ya identificados como de riesgo, se suman a la predicción de churn.</p></li>
+<li><p><strong>Antigüedad Media (<code class="docutils literal notranslate"><span class="pre">tenure</span></code>):</strong> Con 18 meses, ya no es un «novato», pero tampoco un veterano. El modelo ve su antigüedad como un factor de riesgo moderado, pero no tan fuerte como el de un cliente con 2 meses.</p></li>
+</ol>
+</section>
+<section id="id11">
+<h5><strong>Factores que DISMINUYEN el Riesgo de Churn (Barras Rojas)</strong><a class="headerlink" href="#id11" title="Link to this heading">#</a></h5>
+<p>Aquí están las «anclas» que probablemente evitaron que el cliente se fuera en la vida real y que confundieron al modelo.</p>
+<ol class="arabic simple">
+<li><p><strong>Tiene Soporte Técnico (<code class="docutils literal notranslate"><span class="pre">TechSupport_Yes</span></code>):</strong> Este es el factor de lealtad más fuerte para este cliente. El hecho de que tenga contratado y probablemente use el soporte técnico es una señal de compromiso que el modelo reconoce y que contrarresta significativamente los factores negativos.</p></li>
+<li><p><strong>Cargos Totales (<code class="docutils literal notranslate"><span class="pre">TotalCharges</span></code>):</strong> Aunque el efecto es menor, el hecho de que ya haya acumulado una cantidad considerable de cargos totales juega ligeramente a su favor.</p></li>
+</ol>
+</section>
+</section>
+<section id="id12">
+<h4><strong>Conclusión y Acción de Negocio</strong><a class="headerlink" href="#id12" title="Link to this heading">#</a></h4>
+<p>Este cliente es el <strong>objetivo perfecto para una campaña de retención proactiva</strong>.</p>
+<ul class="simple">
+<li><p><strong>¿Por qué el modelo se equivocó?</strong> Porque el cliente estaba verdaderamente en un punto de equilibrio. Los factores de lealtad (especialmente el tener soporte técnico) fueron en la vida real un poco más fuertes de lo que el modelo estimó, lo que resultó en que el cliente se quedara.</p></li>
+<li><p><strong>¿Cuál es la oportunidad?</strong> El modelo nos ha señalado a un cliente «rescatable». No es un detractor convencido, pero es vulnerable. Está «en la valla», y un pequeño empujón podría asegurarlo a largo plazo o, por el contrario, empujarlo a irse.</p></li>
+</ul>
+<p>La acción de negocio aquí es clara y directa:</p>
+<ol class="arabic simple">
+<li><p><strong>Contactar a este perfil de cliente:</strong> Son los candidatos ideales para una llamada o un correo electrónico personalizado.</p></li>
+<li><p><strong>Atacar el principal factor de riesgo:</strong> Ofrecerle un descuento atractivo para cambiarse de un contrato mes a mes a uno de <strong>1 año</strong>. Esto neutralizaría la mayor fuerza que lo empuja hacia el churn.</p></li>
+<li><p><strong>Reforzar sus puntos de anclaje:</strong> Agradecerle su lealtad y quizás ofrecerle un servicio gratuito durante 6 meses como recompensa por tener ya <code class="docutils literal notranslate"><span class="pre">TechSupport</span></code>.</p></li>
+</ol>
+</section>
+</section>
+</section>
+<hr class="docutils" />
+<section id="comparacion-de-los-tres-casos">
+<h2>3.10 Comparación de los Tres Casos<a class="headerlink" href="#comparacion-de-los-tres-casos" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Crear tabla comparativa</span>
+<span class="n">comparison_data</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">case_idx</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">case_indices</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
+    <span class="n">instance</span> <span class="o">=</span> <span class="n">X_test</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">case_idx</span><span class="p">]</span>
+    <span class="n">true_label</span> <span class="o">=</span> <span class="n">y_test</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">case_idx</span><span class="p">]</span>
+    <span class="n">pred_proba</span> <span class="o">=</span> <span class="n">y_proba</span><span class="p">[</span><span class="n">X_test</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_loc</span><span class="p">(</span><span class="n">case_idx</span><span class="p">)]</span>
+    
+    <span class="n">comparison_data</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+        <span class="s1">&#39;Caso&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;Caso </span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Índice&#39;</span><span class="p">:</span> <span class="n">case_idx</span><span class="p">,</span>
+        <span class="s1">&#39;Etiqueta Real&#39;</span><span class="p">:</span> <span class="s1">&#39;Churn&#39;</span> <span class="k">if</span> <span class="n">true_label</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="s1">&#39;No Churn&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Prob. Churn&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">pred_proba</span><span class="si">:</span><span class="s1">.4f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;tenure&#39;</span><span class="p">:</span> <span class="n">instance</span><span class="p">[</span><span class="s1">&#39;tenure&#39;</span><span class="p">],</span>
+        <span class="s1">&#39;MonthlyCharges&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;$</span><span class="si">{</span><span class="n">instance</span><span class="p">[</span><span class="s1">&#39;MonthlyCharges&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="s1">&#39;Contract&#39;</span><span class="p">:</span> <span class="n">instance</span><span class="p">[</span><span class="s1">&#39;Contract&#39;</span><span class="p">],</span>
+        <span class="s1">&#39;PaymentMethod&#39;</span><span class="p">:</span> <span class="n">instance</span><span class="p">[</span><span class="s1">&#39;PaymentMethod&#39;</span><span class="p">]</span>
+    <span class="p">})</span>
+
+<span class="n">comparison_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">comparison_data</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;COMPARACIÓN DE LOS TRES CASOS&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">comparison_df</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+
+<span class="c1"># Visualización comparativa</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+
+<span class="n">probas</span> <span class="o">=</span> <span class="p">[</span><span class="n">pred_proba_1</span><span class="p">,</span> <span class="n">pred_proba_2</span><span class="p">,</span> <span class="n">pred_proba_3</span><span class="p">]</span>
+<span class="n">colors_viz</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;#e74c3c&#39;</span> <span class="k">if</span> <span class="n">p</span> <span class="o">&gt;</span> <span class="mf">0.7</span> <span class="k">else</span> <span class="s1">&#39;#f39c12&#39;</span> <span class="k">if</span> <span class="n">p</span> <span class="o">&gt;</span> <span class="mf">0.3</span> <span class="k">else</span> <span class="s1">&#39;#2ecc71&#39;</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">probas</span><span class="p">]</span>
+<span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;Caso 1</span><span class="se">\n</span><span class="s1">(Alto Riesgo)&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;Caso 2</span><span class="se">\n</span><span class="s1">(Bajo Riesgo)&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;Caso 3</span><span class="se">\n</span><span class="s1">(Borderline)&#39;</span><span class="p">]</span>
+
+<span class="n">bars</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">probas</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">colors_viz</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Umbral de decisión (0.5)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Probabilidad de Churn&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">13</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Comparación de Probabilidades de Churn&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">11</span><span class="p">)</span>
+
+<span class="c1"># Añadir valores en las barras</span>
+<span class="k">for</span> <span class="n">bar</span><span class="p">,</span> <span class="n">proba</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">bars</span><span class="p">,</span> <span class="n">probas</span><span class="p">):</span>
+    <span class="n">height</span> <span class="o">=</span> <span class="n">bar</span><span class="o">.</span><span class="n">get_height</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">bar</span><span class="o">.</span><span class="n">get_x</span><span class="p">()</span> <span class="o">+</span> <span class="n">bar</span><span class="o">.</span><span class="n">get_width</span><span class="p">()</span><span class="o">/</span><span class="mf">2.</span><span class="p">,</span> <span class="n">height</span> <span class="o">+</span> <span class="mf">0.02</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">proba</span><span class="si">:</span><span class="s1">.4f</span><span class="si">}</span><span class="se">\n</span><span class="s1">(</span><span class="si">{</span><span class="n">proba</span><span class="o">*</span><span class="mi">100</span><span class="si">:</span><span class="s1">.1f</span><span class="si">}</span><span class="s1">%)&#39;</span><span class="p">,</span>
+            <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s1">&#39;bottom&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>COMPARACIÓN DE LOS TRES CASOS
+  Caso  Índice Etiqueta Real Prob. Churn  tenure MonthlyCharges       Contract           PaymentMethod
+Caso 1    6529         Churn      0.8490       2         $74.85 Month-to-month            Mailed check
+Caso 2     437      No Churn      0.0210      72        $114.05       Two year Credit card (automatic)
+Caso 3    4460      No Churn      0.5411      18         $78.20 Month-to-month        Electronic check
+</pre></div>
+</div>
+<img alt="../_images/12b520a777fb16fbe6994a5f1e8fff3a1837281148d905314aef07582ef5f070.png" src="../_images/12b520a777fb16fbe6994a5f1e8fff3a1837281148d905314aef07582ef5f070.png" />
+</div>
+</div>
+<section id="conclusiones-finales-del-analisis-lime-de-la-confianza-a-la-oportunidad">
+<h3><strong>Conclusiones Finales del Análisis LIME: De la Confianza a la Oportunidad</strong><a class="headerlink" href="#conclusiones-finales-del-analisis-lime-de-la-confianza-a-la-oportunidad" title="Link to this heading">#</a></h3>
+<p>La tabla y el gráfico comparativo resumen de los tres perfiles de clientes que hemos analizado. Esta vista consolidada nos permite pasar de explicaciones individuales a una comprensión estratégica del comportamiento del modelo.</p>
+<section id="interpretacion-estrategica">
+<h4><strong>Interpretación Estratégica</strong><a class="headerlink" href="#interpretacion-estrategica" title="Link to this heading">#</a></h4>
+<p>La visualización de las probabilidades de churn no solo nos muestra la predicción del modelo, sino que también revela su <strong>nivel de confianza</strong>, lo cual es clave para la acción de negocio:</p>
+<ol class="arabic simple">
+<li><p><strong>Caso 1 (Alto Riesgo - 84.9%): Confianza en la Alerta.</strong>
+El modelo está muy seguro de esta predicción porque el perfil del cliente (baja antigüedad, contrato mes a mes) encaja perfectamente con los patrones de riesgo aprendidos. <strong>Esto valida que el modelo identifica correctamente a los clientes de alto riesgo.</strong></p></li>
+<li><p><strong>Caso 2 (Bajo Riesgo - 2.1%): Confianza en la Lealtad.</strong>
+La probabilidad es casi nula. El modelo tiene una certeza abrumadora de que este cliente se quedará, gracias a su contrato de dos años y su máxima antigüedad. <strong>Esto genera confianza en que el modelo no generará falsas alarmas con nuestros clientes más valiosos y leales.</strong></p></li>
+<li><p><strong>Caso 3 (Borderline - 54.1%): La Incertidumbre es la Oportunidad.</strong>
+Este es el insight más valioso. La probabilidad, apenas por encima del umbral del 50%, refleja la <strong>indecisión del modelo</strong>, que es un espejo de la <strong>indecisión del cliente</strong>. El modelo se equivocó (fue un Falso Positivo), pero nos ha hecho un favor enorme: <strong>ha identificado a un cliente vulnerable pero recuperable.</strong> Este cliente tiene factores de riesgo (contrato, pago) pero también anclas de lealtad (antigüedad media, servicios contratados).</p></li>
+</ol>
+</section>
+</section>
+</section>
+<section id="analisis-de-sensibilidad-que-pasa-si-cambiamos-una-caracteristica">
+<h2>3.11 Análisis de Sensibilidad: ¿Qué pasa si cambiamos una característica?<a class="headerlink" href="#analisis-de-sensibilidad-que-pasa-si-cambiamos-una-caracteristica" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Seleccionar Caso 1 (alto riesgo) y simular cambios</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ANÁLISIS DE SENSIBILIDAD - CASO 1&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;¿Qué pasa si cambiamos el tipo de contrato del Caso 1?</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Cliente original (datos originales sin transformar)</span>
+<span class="n">original_instance</span> <span class="o">=</span> <span class="n">X_test</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">case_pos_1</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">original_proba</span> <span class="o">=</span> <span class="n">pred_proba_1</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cliente Original:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Contract: </span><span class="si">{</span><span class="n">original_instance</span><span class="p">[</span><span class="s1">&#39;Contract&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Probabilidad de Churn: </span><span class="si">{</span><span class="n">original_proba</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">original_proba</span><span class="o">*</span><span class="mi">100</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">%)</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Simular cambios de contrato</span>
+<span class="n">contract_options</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Month-to-month&#39;</span><span class="p">,</span> <span class="s1">&#39;One year&#39;</span><span class="p">,</span> <span class="s1">&#39;Two year&#39;</span><span class="p">]</span>
+<span class="n">simulations</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="k">for</span> <span class="n">contract_type</span> <span class="ow">in</span> <span class="n">contract_options</span><span class="p">:</span>
+    <span class="c1"># Modificar la instancia original</span>
+    <span class="n">modified_instance</span> <span class="o">=</span> <span class="n">original_instance</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">modified_instance</span><span class="p">[</span><span class="s1">&#39;Contract&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">contract_type</span>
+    
+    <span class="c1"># Crear DataFrame para pasar al modelo completo</span>
+    <span class="n">modified_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span><span class="n">modified_instance</span><span class="p">])</span>
+    
+    <span class="c1"># Predecir con el modelo completo (incluye preprocesamiento)</span>
+    <span class="n">modified_proba</span> <span class="o">=</span> <span class="n">best_model</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">modified_df</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+    
+    <span class="n">simulations</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+        <span class="s1">&#39;Contract&#39;</span><span class="p">:</span> <span class="n">contract_type</span><span class="p">,</span>
+        <span class="s1">&#39;Churn_Probability&#39;</span><span class="p">:</span> <span class="n">modified_proba</span><span class="p">,</span>
+        <span class="s1">&#39;Change&#39;</span><span class="p">:</span> <span class="n">modified_proba</span> <span class="o">-</span> <span class="n">original_proba</span>
+    <span class="p">})</span>
+    
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Si cambiamos a &#39;</span><span class="si">{</span><span class="n">contract_type</span><span class="si">}</span><span class="s2">&#39;:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Probabilidad de Churn: </span><span class="si">{</span><span class="n">modified_proba</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">modified_proba</span><span class="o">*</span><span class="mi">100</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">%)&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Cambio: </span><span class="si">{</span><span class="n">modified_proba</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">original_proba</span><span class="si">:</span><span class="s2">+.4f</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="p">(</span><span class="n">modified_proba</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">original_proba</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="si">:</span><span class="s2">+.2f</span><span class="si">}</span><span class="s2">%)</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Visualización</span>
+<span class="n">simulations_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">simulations</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">colors_sim</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;#e74c3c&#39;</span><span class="p">,</span> <span class="s1">&#39;#f39c12&#39;</span><span class="p">,</span> <span class="s1">&#39;#2ecc71&#39;</span><span class="p">]</span>
+<span class="n">bars</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">simulations_df</span><span class="p">[</span><span class="s1">&#39;Contract&#39;</span><span class="p">],</span> <span class="n">simulations_df</span><span class="p">[</span><span class="s1">&#39;Churn_Probability&#39;</span><span class="p">],</span> 
+              <span class="n">color</span><span class="o">=</span><span class="n">colors_sim</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">original_proba</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> 
+           <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;Probabilidad Original (</span><span class="si">{</span><span class="n">original_proba</span><span class="si">:</span><span class="s1">.4f</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Probabilidad de Churn&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">13</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Tipo de Contrato&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">13</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Análisis de Sensibilidad: Impacto del Tipo de Contrato&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">11</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">bar</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">bars</span><span class="p">,</span> <span class="n">simulations_df</span><span class="o">.</span><span class="n">itertuples</span><span class="p">()):</span>
+    <span class="n">height</span> <span class="o">=</span> <span class="n">bar</span><span class="o">.</span><span class="n">get_height</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">bar</span><span class="o">.</span><span class="n">get_x</span><span class="p">()</span> <span class="o">+</span> <span class="n">bar</span><span class="o">.</span><span class="n">get_width</span><span class="p">()</span><span class="o">/</span><span class="mf">2.</span><span class="p">,</span> <span class="n">height</span> <span class="o">+</span> <span class="mf">0.02</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">row</span><span class="o">.</span><span class="n">Churn_Probability</span><span class="si">:</span><span class="s1">.4f</span><span class="si">}</span><span class="se">\n</span><span class="s1">(</span><span class="si">{</span><span class="n">row</span><span class="o">.</span><span class="n">Change</span><span class="si">:</span><span class="s1">+.4f</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">,</span>
+            <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s1">&#39;bottom&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">11</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ANÁLISIS DE SENSIBILIDAD - CASO 1
+¿Qué pasa si cambiamos el tipo de contrato del Caso 1?
+
+Cliente Original:
+  Contract: Month-to-month
+  Probabilidad de Churn: 0.8490 (84.90%)
+
+Si cambiamos a &#39;Month-to-month&#39;:
+  Probabilidad de Churn: 0.8490 (84.90%)
+  Cambio: +0.0000 (+0.00%)
+
+Si cambiamos a &#39;One year&#39;:
+  Probabilidad de Churn: 0.6513 (65.13%)
+  Cambio: -0.1977 (-19.77%)
+
+Si cambiamos a &#39;Two year&#39;:
+  Probabilidad de Churn: 0.5346 (53.46%)
+  Cambio: -0.3144 (-31.44%)
+</pre></div>
+</div>
+<img alt="../_images/6902e0d9f6e318e7341810a4219f358f7301022b8556d4aa7a53910675237623.png" src="../_images/6902e0d9f6e318e7341810a4219f358f7301022b8556d4aa7a53910675237623.png" />
+</div>
+</div>
+<section id="analisis-de-sensibilidad-cuantificando-el-impacto-de-la-retencion">
+<h3><strong>Análisis de Sensibilidad: Cuantificando el Impacto de la Retención</strong><a class="headerlink" href="#analisis-de-sensibilidad-cuantificando-el-impacto-de-la-retencion" title="Link to this heading">#</a></h3>
+<p>Después de entender <em>por qué</em> un cliente tiene un alto riesgo de churn, el siguiente paso es responder a la pregunta de negocio más importante: <strong>«¿Qué podemos hacer al respecto y qué impacto tendría?»</strong></p>
+<p>Para ello, realizamos un análisis de sensibilidad sobre el <strong>Caso 1</strong>, el cliente con una probabilidad de churn del <strong>84.9%</strong>. Simulamos un cambio en su característica más influyente, el <strong>Tipo de Contrato</strong>, para ver cómo reaccionaría el modelo.</p>
+<section id="escenario-simulado-y-si-le-ofrecemos-un-contrato-a-largo-plazo">
+<h4><strong>Escenario Simulado: «¿Y si le ofrecemos un contrato a largo plazo?»</strong><a class="headerlink" href="#escenario-simulado-y-si-le-ofrecemos-un-contrato-a-largo-plazo" title="Link to this heading">#</a></h4>
+<p>Manteniendo todas las demás características del cliente iguales, evaluamos cómo cambiaría su probabilidad de churn si aceptara un contrato de uno o dos años.</p>
+<section id="resultados-de-la-simulacion">
+<h5><strong>Resultados de la Simulación</strong><a class="headerlink" href="#resultados-de-la-simulacion" title="Link to this heading">#</a></h5>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>Escenario</p></th>
+<th class="head text-center"><p>Probabilidad de Churn</p></th>
+<th class="head text-center"><p>Reducción del Riesgo</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p><strong>Original (Mes a mes)</strong></p></td>
+<td class="text-center"><p><strong>84.90%</strong></p></td>
+<td class="text-center"><p>(Línea Base)</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>Si cambia a <strong>Contrato de 1 Año</strong></p></td>
+<td class="text-center"><p><strong>65.13%</strong></p></td>
+<td class="text-center"><p><strong>-19.77 puntos</strong></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>Si cambia a <strong>Contrato de 2 Años</strong></p></td>
+<td class="text-center"><p><strong>53.46%</strong></p></td>
+<td class="text-center"><p><strong>-31.44 puntos</strong></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+<section id="interpretacion-y-conclusion-estrategica">
+<h4><strong>Interpretación y Conclusión Estratégica</strong><a class="headerlink" href="#interpretacion-y-conclusion-estrategica" title="Link to this heading">#</a></h4>
+<p>El gráfico y los resultados de la simulación son increíblemente reveladores y proporcionan una justificación basada en datos para una estrategia de retención.</p>
+<ol class="arabic simple">
+<li><p><strong>El Contrato es la Herramienta de Retención Más Poderosa:</strong>
+El análisis cuantifica el inmenso poder del tipo de contrato. Simplemente cambiando esta única variable, podemos reducir drásticamente el riesgo percibido por el modelo.</p></li>
+<li><p><strong>De «Casi Perdido» a «Recuperable»:</strong></p>
+<ul class="simple">
+<li><p>Al pasar a un <strong>contrato de 1 año</strong>, la probabilidad de churn del cliente baja casi 20 puntos. Sigue siendo un riesgo, pero pasa de ser una certeza a una probabilidad manejable.</p></li>
+<li><p>Al pasar a un <strong>contrato de 2 años</strong>, el riesgo se reduce en más de 30 puntos, llevándolo a un nivel «borderline» (53.46%). Para el modelo, este cambio transformaría a un cliente casi perdido en un cliente indeciso, lo cual es una victoria masiva.</p></li>
+</ul>
+</li>
+<li><p><strong>Justificación del Retorno de la Inversión (ROI):</strong>
+Este análisis es la base para justificar el costo de una campaña de retención. Ahora podemos decir, por ejemplo: «Si ofrecemos un descuento de $X para que un cliente de alto riesgo firme un contrato de 2 años, nuestro modelo estima que su probabilidad de irse disminuirá en un 31.44%. Esto nos permite calcular el valor esperado de la acción de retención».</p></li>
+</ol>
+</section>
+</section>
+</section>
+<hr class="docutils" />
+<section id="resumen-y-conclusiones-del-analisis-de-interpretabilidad">
+<h2>3.12 Resumen y Conclusiones del Análisis de Interpretabilidad<a class="headerlink" href="#resumen-y-conclusiones-del-analisis-de-interpretabilidad" title="Link to this heading">#</a></h2>
+<p>Este análisis ha logrado transformar nuestro modelo predictivo de una «caja negra» a una herramienta estratégica para la toma de decisiones. A través de LIME y el análisis de sensibilidad, no solo entendemos las predicciones, sino que también podemos simular el impacto de nuestras acciones.</p>
+<section id="principales-logros-del-analisis">
+<h3>Principales Logros del Análisis<a class="headerlink" href="#principales-logros-del-analisis" title="Link to this heading">#</a></h3>
+<ol class="arabic simple">
+<li><p><strong>Entendimiento a Nivel Individual:</strong> Se ha validado la capacidad de explicar el <strong>porqué</strong> detrás de la predicción de churn para cualquier cliente, identificando los factores específicos que impulsan su riesgo.</p></li>
+<li><p><strong>Validación de los Impulsores de Negocio:</strong> Las explicaciones de LIME son consistentes con el análisis de importancia global, lo que genera una alta confianza en que el modelo ha aprendido los patrones de comportamiento correctos y no se basa en artefactos espurios.</p></li>
+<li><p><strong>Cuantificación del Impacto de las Acciones de Retención:</strong> A través del análisis de sensibilidad («what-if»), hemos demostrado la capacidad de <strong>simular y medir</strong> el efecto de acciones de negocio concretas, como cambiar el tipo de contrato de un cliente, proporcionando una base de datos para justificar el ROI de las campañas de retención.</p></li>
+</ol>
+</section>
+<section id="impulsores-de-churn-vs-anclas-de-lealtad">
+<h3>Impulsores de Churn vs. Anclas de Lealtad<a class="headerlink" href="#impulsores-de-churn-vs-anclas-de-lealtad" title="Link to this heading">#</a></h3>
+<p>El análisis confirma un perfil claro y consistente de los factores que mueven la aguja de la lealtad del cliente.</p>
+<p><strong>Principales Impulsores de Riesgo:</strong></p>
+<ul class="simple">
+<li><p><strong>Tipo de Contrato:</strong> Ser un cliente <code class="docutils literal notranslate"><span class="pre">Month-to-month</span></code> es el predictor de riesgo más fuerte.</p></li>
+<li><p><strong>Servicio de Internet:</strong> Tener <code class="docutils literal notranslate"><span class="pre">Fiber</span> <span class="pre">Optic</span></code> se asocia consistentemente con un mayor riesgo.</p></li>
+<li><p><strong>Baja Antigüedad (Tenure):</strong> Los clientes con pocos meses son significativamente más volátiles.</p></li>
+<li><p><strong>Método de Pago:</strong> El uso de <code class="docutils literal notranslate"><span class="pre">Electronic</span> <span class="pre">check</span></code> es una señal de alerta.</p></li>
+</ul>
+<p><strong>Principales Anclas de Lealtad:</strong></p>
+<ul class="simple">
+<li><p><strong>Compromiso a Largo Plazo:</strong> Un contrato de <code class="docutils literal notranslate"><span class="pre">Two</span> <span class="pre">year</span></code> es el indicador más poderoso de retención.</p></li>
+<li><p><strong>Alta Antigüedad (Tenure):</strong> Los clientes con más de 60 meses rara vez se van.</p></li>
+<li><p><strong>Integración de Servicios:</strong> Tener contratado <code class="docutils literal notranslate"><span class="pre">TechSupport</span></code> u <code class="docutils literal notranslate"><span class="pre">OnlineSecurity</span></code> actúa como un factor de anclaje.</p></li>
+</ul>
+</section>
+<section id="estrategias-accionables-derivadas-del-analisis">
+<h3>Estrategias Accionables Derivadas del Análisis<a class="headerlink" href="#estrategias-accionables-derivadas-del-analisis" title="Link to this heading">#</a></h3>
+<p>El verdadero valor de este análisis es su capacidad para generar y justificar acciones de negocio específicas.</p>
+<ol class="arabic simple">
+<li><p><strong>Intervención Priorizada en Clientes «Indecisos»:</strong> Los clientes con probabilidades «borderline» (ej. 50-70%) son el objetivo principal para las campañas de retención. LIME demuestra que estos clientes tienen un balance de factores de riesgo y lealtad, haciéndolos los más persuadibles.</p></li>
+<li><p><strong>Justificación de Ofertas Basada en Datos:</strong> El análisis de sensibilidad prueba que ofrecer a un cliente de alto riesgo un contrato de dos años puede reducir su probabilidad de churn en más de 30 puntos. Esta simulación sirve como justificación cuantitativa para diseñar ofertas de migración de contrato.</p></li>
+<li><p><strong>Investigación de Producto:</strong> La recurrente aparición de <code class="docutils literal notranslate"><span class="pre">Fiber</span> <span class="pre">Optic</span></code> como un impulsor de churn, incluso en clientes leales, es un insight crítico. Se recomienda una investigación de producto o de satisfacción del cliente para entender la causa raíz (precio, estabilidad del servicio, expectativas del cliente).</p></li>
+</ol>
+</section>
+<section id="valor-y-consideraciones-de-lime">
+<h3>Valor y Consideraciones de LIME<a class="headerlink" href="#valor-y-consideraciones-de-lime" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><strong>Valor Estratégico:</strong> Proporciona transparencia, genera confianza en el modelo entre los stakeholders y, lo más importante, traduce las predicciones en acciones de negocio concretas.</p></li>
+<li><p><strong>Consideraciones Técnicas:</strong> Es importante recordar que LIME ofrece explicaciones locales (por cliente) y no globales. Su naturaleza estocástica puede generar ligeras variaciones, y su aplicación a gran escala puede ser computacionalmente intensiva.</p></li>
+</ul>
+<hr class="docutils" />
+<p><strong>Conclusión Final:</strong> El modelo ha evolucionado de ser un predictor a ser un simulador estratégico, permitiéndonos no solo anticipar el churn, sino también entender cómo prevenirlo de manera efectiva.</p>
+</section>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./notebooks"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="2_model_training.html"
+       title="página anterior">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">anterior</p>
+        <p class="prev-next-title">2. Entrenamiento y Evaluación de Modelos</p>
+      </div>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contenido
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prediccion-de-churn-en-telecomunicaciones">Predicción de Churn en Telecomunicaciones</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#importacion-de-librerias">3.1 Importación de Librerías</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#carga-de-datos-y-modelo">3.2 Carga de Datos y Modelo</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configurar-lime-explainer">3.4 Configurar LIME Explainer</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#funcion-de-prediccion-para-lime">3.5 Función de Predicción para LIME</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#seleccion-de-casos-representativos">3.6 Selección de Casos Representativos</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#explicacion-con-lime-caso-1-alta-probabilidad-de-churn">3.7 Explicación con LIME - Caso 1: Alta Probabilidad de Churn</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#analisis-lime-caso-1-perfil-clasico-de-alto-riesgo-de-churn"><strong>Análisis LIME - Caso 1: Perfil Clásico de Alto Riesgo de Churn</strong></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#resumen-del-caso"><strong>Resumen del Caso</strong></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#perfil-del-cliente"><strong>Perfil del Cliente</strong></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#interpretacion-de-la-explicacion-lime"><strong>Interpretación de la Explicación LIME</strong></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#factores-que-aumentan-el-riesgo-de-churn-barras-verdes"><strong>Factores que AUMENTAN el Riesgo de Churn (Barras Verdes)</strong></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#factores-que-disminuyen-el-riesgo-de-churn-barras-rojas"><strong>Factores que DISMINUYEN el Riesgo de Churn (Barras Rojas)</strong></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#conclusion-y-accion-de-negocio"><strong>Conclusión y Acción de Negocio</strong></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#explicacion-con-lime-caso-2-baja-probabilidad-de-churn">3.8 Explicación con LIME - Caso 2: Baja Probabilidad de Churn</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#analisis-lime-caso-2-el-perfil-del-cliente-leal"><strong>Análisis LIME - Caso 2: El Perfil del Cliente Leal</strong></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id1"><strong>Resumen del Caso</strong></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id2"><strong>Perfil del Cliente</strong></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id3"><strong>Interpretación de la Explicación LIME</strong></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#id4"><strong>Factores que DISMINUYEN el Riesgo de Churn (Barras Rojas)</strong></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#id5"><strong>Factores que AUMENTAN el Riesgo de Churn (Barras Verdes)</strong></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id6"><strong>Conclusión y Acción de Negocio</strong></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#explicacion-con-lime-caso-3-probabilidad-borderline">3.9 Explicación con LIME - Caso 3: Probabilidad Borderline</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#analisis-lime-caso-3-el-cliente-indeciso-y-un-error-del-modelo"><strong>Análisis LIME - Caso 3: El Cliente Indeciso (y un Error del Modelo)</strong></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id7"><strong>Resumen del Caso</strong></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id8"><strong>Perfil del Cliente</strong></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id9"><strong>Interpretación de la Explicación LIME</strong></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#id10"><strong>Factores que AUMENTAN el Riesgo de Churn (Barras Verdes)</strong></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#id11"><strong>Factores que DISMINUYEN el Riesgo de Churn (Barras Rojas)</strong></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id12"><strong>Conclusión y Acción de Negocio</strong></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#comparacion-de-los-tres-casos">3.10 Comparación de los Tres Casos</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#conclusiones-finales-del-analisis-lime-de-la-confianza-a-la-oportunidad"><strong>Conclusiones Finales del Análisis LIME: De la Confianza a la Oportunidad</strong></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#interpretacion-estrategica"><strong>Interpretación Estratégica</strong></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#analisis-de-sensibilidad-que-pasa-si-cambiamos-una-caracteristica">3.11 Análisis de Sensibilidad: ¿Qué pasa si cambiamos una característica?</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#analisis-de-sensibilidad-cuantificando-el-impacto-de-la-retencion"><strong>Análisis de Sensibilidad: Cuantificando el Impacto de la Retención</strong></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#escenario-simulado-y-si-le-ofrecemos-un-contrato-a-largo-plazo"><strong>Escenario Simulado: «¿Y si le ofrecemos un contrato a largo plazo?»</strong></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#resultados-de-la-simulacion"><strong>Resultados de la Simulación</strong></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#interpretacion-y-conclusion-estrategica"><strong>Interpretación y Conclusión Estratégica</strong></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#resumen-y-conclusiones-del-analisis-de-interpretabilidad">3.12 Resumen y Conclusiones del Análisis de Interpretabilidad</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#principales-logros-del-analisis">Principales Logros del Análisis</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#impulsores-de-churn-vs-anclas-de-lealtad">Impulsores de Churn vs. Anclas de Lealtad</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#estrategias-accionables-derivadas-del-analisis">Estrategias Accionables Derivadas del Análisis</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#valor-y-consideraciones-de-lime">Valor y Consideraciones de LIME</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+Por Omar Medina & Andrés España
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2025.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

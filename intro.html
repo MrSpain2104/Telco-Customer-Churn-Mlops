@@ -1,0 +1,703 @@
+
+<!DOCTYPE html>
+
+
+<html lang="es" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Predicción de Churn en Telecomunicaciones &#8212; Telco Customer Churn - MLOps Project</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css?v=6644e6bb" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="_static/documentation_options.js?v=78d55cf8"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+    <script src="_static/translations.js?v=d190bf04"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'intro';</script>
+    <link rel="canonical" href="https://mrspain2104.github.io/Telco-Customer-Churn-Mlops/intro.html" />
+    <link rel="index" title="Índice" href="genindex.html" />
+    <link rel="search" title="Búsqueda" href="search.html" />
+    <link rel="next" title="1. Exploración Inicial y Preprocesamiento de Datos" href="notebooks/1_eda_preprocessing.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="es"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Saltar al contenido principal</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Volver arriba</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Advertencia de versión"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="#">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Telco Customer Churn - MLOps Project</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Búsqueda" aria-label="Búsqueda" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Búsqueda</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="notebooks/1_eda_preprocessing.html">1. Análisis Exploratorio y Preprocesamiento</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/2_model_training.html">2. Entrenamiento de Modelos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/3_interpretability.html">3. Interpretabilidad con LIME</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/MrSpain2104/Telco-Customer-Churn-Mlops" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Repositorio de origen"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/MrSpain2104/Telco-Customer-Churn-Mlops/issues/new?title=Issue%20on%20page%20%2Fintro.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Abrir un problema"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Descarga esta pagina">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/intro.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Descargar archivo fuente"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Imprimir en PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Modo de pantalla completa"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="claro/oscuro" aria-label="claro/oscuro" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Búsqueda" aria-label="Búsqueda" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Predicción de Churn en Telecomunicaciones</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contenido </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#implementacion-de-mlops-con-machine-learning">Implementación de MLOps con Machine Learning</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#equipo-de-desarrollo">Equipo de Desarrollo</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#resumen-ejecutivo">Resumen Ejecutivo</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#objetivos-del-proyecto">Objetivos del Proyecto</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#contexto-del-problema">Contexto del Problema</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dataset-telco-customer-churn">Dataset: Telco Customer Churn</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tecnologias-utilizadas">Tecnologías Utilizadas</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#machine-learning">Machine Learning</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mlops-stack">MLOps Stack</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#herramientas-de-desarrollo">Herramientas de Desarrollo</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#metodologia">Metodología</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#analisis-exploratorio-de-datos-eda">1. Análisis Exploratorio de Datos (EDA)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#entrenamiento-de-modelos">2. Entrenamiento de Modelos</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#interpretabilidad-con-lime">3. Interpretabilidad con LIME</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#despliegue-y-api">4. Despliegue y API</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mlops-y-ci-cd">5. MLOps y CI/CD</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#contacto-y-contribuciones">📞 Contacto y Contribuciones</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="prediccion-de-churn-en-telecomunicaciones">
+<h1>Predicción de Churn en Telecomunicaciones<a class="headerlink" href="#prediccion-de-churn-en-telecomunicaciones" title="Link to this heading">#</a></h1>
+<section id="implementacion-de-mlops-con-machine-learning">
+<h2>Implementación de MLOps con Machine Learning<a class="headerlink" href="#implementacion-de-mlops-con-machine-learning" title="Link to this heading">#</a></h2>
+<div style="text-align: center; padding: 40px 0;">
+  <h2> Proyecto Académico</h2>
+  <h3>Universidad del Norte</h3>
+  <p style="font-size: 1.2em; margin-top: 20px;">Curso: Machine Learning</p>
+</div>
+<hr class="docutils" />
+<section id="equipo-de-desarrollo">
+<h3>Equipo de Desarrollo<a class="headerlink" href="#equipo-de-desarrollo" title="Link to this heading">#</a></h3>
+<p><strong>Integrantes:</strong></p>
+<ul class="simple">
+<li><p><strong>Omar Medina</strong> - Análisis y Modelado</p></li>
+<li><p><strong>Andrés España</strong> - MLOps e Implementación</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="resumen-ejecutivo">
+<h2>Resumen Ejecutivo<a class="headerlink" href="#resumen-ejecutivo" title="Link to this heading">#</a></h2>
+<p>Este proyecto implementa un <strong>sistema completo de predicción de churn</strong> para empresas de telecomunicaciones, utilizando técnicas avanzadas de Machine Learning y mejores prácticas de MLOps.</p>
+<section id="objetivos-del-proyecto">
+<h3>Objetivos del Proyecto<a class="headerlink" href="#objetivos-del-proyecto" title="Link to this heading">#</a></h3>
+<ol class="arabic simple">
+<li><p><strong>Predecir el abandono de clientes</strong> (churn) con alta precisión</p></li>
+<li><p><strong>Identificar factores clave</strong> que influyen en la decisión de los clientes</p></li>
+<li><p><strong>Implementar un pipeline MLOps completo</strong> desde el desarrollo hasta la producción</p></li>
+<li><p><strong>Desplegar una API REST</strong> para predicciones en tiempo real</p></li>
+</ol>
+</section>
+</section>
+<hr class="docutils" />
+<section id="contexto-del-problema">
+<h2>Contexto del Problema<a class="headerlink" href="#contexto-del-problema" title="Link to this heading">#</a></h2>
+<p>La <strong>tasa de abandono de clientes</strong> (churn) es uno de los principales desafíos en la industria de telecomunicaciones. Retener clientes existentes es significativamente más rentable que adquirir nuevos, con estudios que muestran que:</p>
+<ul class="simple">
+<li><p>Cuesta <strong>5 veces más</strong> adquirir un nuevo cliente que retener uno existente</p></li>
+<li><p>Aumentar la retención en un <strong>5%</strong> puede incrementar las ganancias entre <strong>25% y 95%</strong></p></li>
+<li><p>La tasa promedio de churn en telecomunicaciones es del <strong>15-25% anual</strong></p></li>
+</ul>
+<section id="dataset-telco-customer-churn">
+<h3>Dataset: Telco Customer Churn<a class="headerlink" href="#dataset-telco-customer-churn" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><strong>Fuente:</strong> IBM Sample Data Sets (Kaggle)</p></li>
+<li><p><strong>Registros:</strong> ~7,000 clientes</p></li>
+<li><p><strong>Variables:</strong> 20 características demográficas y de servicios</p></li>
+<li><p><strong>Variable objetivo:</strong> Churn (Yes/No)</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="tecnologias-utilizadas">
+<h2>Tecnologías Utilizadas<a class="headerlink" href="#tecnologias-utilizadas" title="Link to this heading">#</a></h2>
+<section id="machine-learning">
+<h3>Machine Learning<a class="headerlink" href="#machine-learning" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><strong>Algoritmos:</strong> Random Forest, XGBoost, CatBoost, LightGBM</p></li>
+<li><p><strong>Optimización:</strong> GridSearchCV con validación cruzada estratificada</p></li>
+<li><p><strong>Interpretabilidad:</strong> LIME (Local Interpretable Model-agnostic Explanations)</p></li>
+</ul>
+</section>
+<section id="mlops-stack">
+<h3>MLOps Stack<a class="headerlink" href="#mlops-stack" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><strong>API:</strong> FastAPI con documentación automática (Swagger/OpenAPI)</p></li>
+<li><p><strong>Containerización:</strong> Docker con imágenes optimizadas</p></li>
+<li><p><strong>CI/CD:</strong> GitHub Actions con testing automático</p></li>
+<li><p><strong>Despliegue:</strong> Preparado para producción con monitoreo</p></li>
+</ul>
+</section>
+<section id="herramientas-de-desarrollo">
+<h3>Herramientas de Desarrollo<a class="headerlink" href="#herramientas-de-desarrollo" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><strong>Python 3.10+</strong> con entornos virtuales</p></li>
+<li><p><strong>Jupyter Notebooks</strong> para análisis exploratorio</p></li>
+<li><p><strong>Scikit-learn</strong> para pipeline de preprocesamiento</p></li>
+<li><p><strong>Pandas &amp; NumPy</strong> para manipulación de datos</p></li>
+<li><p><strong>Matplotlib &amp; Seaborn</strong> para visualizaciones</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="metodologia">
+<h2>Metodología<a class="headerlink" href="#metodologia" title="Link to this heading">#</a></h2>
+<p>El proyecto sigue una metodología estructurada en 5 fases:</p>
+<section id="analisis-exploratorio-de-datos-eda">
+<h3>1. Análisis Exploratorio de Datos (EDA)<a class="headerlink" href="#analisis-exploratorio-de-datos-eda" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Comprensión profunda del dataset</p></li>
+<li><p>Análisis de distribuciones y correlaciones</p></li>
+<li><p>Identificación de patrones de churn</p></li>
+<li><p>Visualizaciones profesionales con paleta coherente</p></li>
+<li><p>Análisis de Componentes Principales (PCA)</p></li>
+</ul>
+</section>
+<section id="entrenamiento-de-modelos">
+<h3>2. Entrenamiento de Modelos<a class="headerlink" href="#entrenamiento-de-modelos" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Preprocesamiento con Pipelines de Scikit-learn</p></li>
+<li><p>Entrenamiento de 4 algoritmos de clasificación</p></li>
+<li><p>Optimización exhaustiva de hiperparámetros</p></li>
+<li><p>Evaluación con múltiples métricas (ROC-AUC, F1-Score, etc.)</p></li>
+<li><p>Selección del mejor modelo</p></li>
+</ul>
+</section>
+<section id="interpretabilidad-con-lime">
+<h3>3. Interpretabilidad con LIME<a class="headerlink" href="#interpretabilidad-con-lime" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Explicaciones a nivel individual</p></li>
+<li><p>Identificación de factores de riesgo</p></li>
+<li><p>Análisis de sensibilidad</p></li>
+<li><p>Recomendaciones accionables para el negocio</p></li>
+</ul>
+</section>
+<section id="despliegue-y-api">
+<h3>4. Despliegue y API<a class="headerlink" href="#despliegue-y-api" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>API REST con FastAPI</p></li>
+<li><p>Validación de datos con Pydantic</p></li>
+<li><p>Documentación interactiva automática</p></li>
+<li><p>Endpoints para predicción individual y por lotes</p></li>
+</ul>
+</section>
+<section id="mlops-y-ci-cd">
+<h3>5. MLOps y CI/CD<a class="headerlink" href="#mlops-y-ci-cd" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Dockerización de la aplicación</p></li>
+<li><p>Pipeline de integración continua</p></li>
+<li><p>Tests automatizados</p></li>
+<li><p>Preparación para despliegue en producción</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="contacto-y-contribuciones">
+<h2>📞 Contacto y Contribuciones<a class="headerlink" href="#contacto-y-contribuciones" title="Link to this heading">#</a></h2>
+<p>Este proyecto fue desarrollado como parte del curso de Machine Learning en la <strong>Universidad del Norte</strong>.</p>
+<p><strong>Equipo:</strong></p>
+<ul class="simple">
+<li><p>Omar Medina</p></li>
+<li><p>Andrés España</p></li>
+</ul>
+<p><strong>Repositorio:</strong> <a class="reference external" href="https://github.com/MrSpain2104/Telco-Customer-Churn-Mlops">GitHub - Telco Customer Churn MLOps</a></p>
+<p><strong>Licencia:</strong> MIT</p>
+<hr class="docutils" />
+<div style="text-align: center; padding: 30px 0; border-top: 2px solid #ddd; margin-top: 50px;">
+  <p style="font-size: 0.9em; color: #666;">
+     Año 2025 | Universidad del Norte | Machine Learning
+  </p>
+</div>
+</section>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="right-next"
+       href="notebooks/1_eda_preprocessing.html"
+       title="siguiente página">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">siguiente</p>
+        <p class="prev-next-title">1. Exploración Inicial y Preprocesamiento de Datos</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contenido
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#implementacion-de-mlops-con-machine-learning">Implementación de MLOps con Machine Learning</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#equipo-de-desarrollo">Equipo de Desarrollo</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#resumen-ejecutivo">Resumen Ejecutivo</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#objetivos-del-proyecto">Objetivos del Proyecto</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#contexto-del-problema">Contexto del Problema</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dataset-telco-customer-churn">Dataset: Telco Customer Churn</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tecnologias-utilizadas">Tecnologías Utilizadas</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#machine-learning">Machine Learning</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mlops-stack">MLOps Stack</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#herramientas-de-desarrollo">Herramientas de Desarrollo</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#metodologia">Metodología</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#analisis-exploratorio-de-datos-eda">1. Análisis Exploratorio de Datos (EDA)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#entrenamiento-de-modelos">2. Entrenamiento de Modelos</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#interpretabilidad-con-lime">3. Interpretabilidad con LIME</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#despliegue-y-api">4. Despliegue y API</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mlops-y-ci-cd">5. MLOps y CI/CD</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#contacto-y-contribuciones">📞 Contacto y Contribuciones</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+Por Omar Medina & Andrés España
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2025.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
