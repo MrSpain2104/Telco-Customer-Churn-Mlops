@@ -60,6 +60,7 @@
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/2_model_training';</script>
     <link rel="canonical" href="https://mrspain2104.github.io/Telco-Customer-Churn-Mlops/notebooks/2_model_training.html" />
+    <link rel="icon" href="../_static/logo.png"/>
     <link rel="index" title="Índice" href="../genindex.html" />
     <link rel="search" title="Búsqueda" href="../search.html" />
     <link rel="next" title="3. Interpretabilidad de Modelos con LIME" href="3_interpretability.html" />
@@ -150,8 +151,14 @@
   
   
   
+    
+    
+      
+    
+    
+    <img src="../_static/logo.png" class="logo__image only-light" alt="Telco Customer Churn - MLOps Project - Home"/>
+    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="Telco Customer Churn - MLOps Project - Home"/>`);</script>
   
-    <p class="title logo__title">Telco Customer Churn - MLOps Project</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -958,9 +965,6 @@ LightGBM:
 <span class="n">training_times</span> <span class="o">=</span> <span class="p">{}</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ENTRENAMIENTO DE MODELOS CON GRIDSEARCHCV&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="o">*</span><span class="mi">80</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Esto puede tardar varios minutos...</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-
 <span class="k">for</span> <span class="n">model_name</span><span class="p">,</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">models</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">{</span><span class="s1">&#39;=&#39;</span><span class="o">*</span><span class="mi">80</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Entrenando: </span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -1528,16 +1532,16 @@ RandomForest  0.766501   0.543520 0.751337  0.630752 0.841812
     <span class="n">feature_importances</span> <span class="o">=</span> <span class="p">{}</span>
     
     <span class="k">for</span> <span class="n">model_name</span><span class="p">,</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">best_models</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Extrayendo importancia para: </span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Extrayendo fueature importance para: </span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">importance_df</span> <span class="o">=</span> <span class="n">get_feature_importance</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">model_name</span><span class="p">)</span>
         
         <span class="k">if</span> <span class="n">importance_df</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">feature_importances</span><span class="p">[</span><span class="n">model_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">importance_df</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">importance_df</span><span class="p">)</span><span class="si">}</span><span class="s2"> características extraídas&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;   No se pudo extraer importancia para </span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;   No se pudo extraer el feature importance para </span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Importancia extraída para </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">feature_importances</span><span class="p">)</span><span class="si">}</span><span class="s2"> modelos&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;feature importance extraída para </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">feature_importances</span><span class="p">)</span><span class="si">}</span><span class="s2"> modelos&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
