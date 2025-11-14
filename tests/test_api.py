@@ -3,10 +3,10 @@ from fastapi.testclient import TestClient
 import sys
 from pathlib import Path
 
-# Añadir el directorio app al path
-sys.path.insert(0, str(Path(__file__).parent.parent / "app"))
+# Añadir el directorio raíz al path
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from api import app
+from app.api import app
 
 client = TestClient(app)
 
@@ -201,7 +201,7 @@ def test_risk_level_categorization():
     """
     Test de la categorización de niveles de riesgo.
     """
-    from api import get_risk_level
+    from app.api import get_risk_level
     
     assert get_risk_level(0.1) == "Low"
     assert get_risk_level(0.29) == "Low"
