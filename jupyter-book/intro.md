@@ -107,7 +107,7 @@ El proyecto sigue una metodología estructurada en 5 fases:
 
 ---
 
-## 📞 Contacto y Contribuciones
+##  Contacto y Contribuciones
 
 Este proyecto fue desarrollado como parte del curso de Machine Learning en la **Universidad del Norte**.
 
