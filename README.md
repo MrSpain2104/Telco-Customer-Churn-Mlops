@@ -3,35 +3,33 @@
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.95+-green.svg)](https://fastapi.tiangolo.com)
 [![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://www.docker.com/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## � Equipo de Desarrollo
+## Equipo de Desarrollo
 
 **Universidad del Norte - Curso de Machine Learning**
 
-- **Omar Medina** - Análisis y Modelado
-- **Andrés España** - MLOps e Implementación
+- **Omar Medina** 
+- **Andrés España** 
+---
+
+##  Descripción
+
+Proyecto de **Machine Learning** y **MLOps** para predecir el abandono (churn) de clientes en una empresa de telecomunicaciones. Incluye análisis exploratorio, entrenamiento de modelos, interpretabilidad con LIME y despliegue con FastAPI y Docker.
+
+### Características Principales
+
+-  **Análisis Exploratorio de Datos (EDA)** completo
+-  **4 Modelos de ML**: Random Forest, XGBoost, CatBoost, LightGBM
+-  **Optimización de hiperparámetros** con GridSearchCV
+-  **Interpretabilidad** con LIME
+-  **API REST** con FastAPI
+-  **Containerización** con Docker
+-  **CI/CD** con GitHub Actions
+-  **Tests unitarios** con pytest
 
 ---
 
-## �📋 Descripción
-
-Proyecto completo de **Machine Learning** y **MLOps** para predecir el abandono (churn) de clientes en una empresa de telecomunicaciones. Incluye análisis exploratorio, entrenamiento de modelos, interpretabilidad con LIME y despliegue con FastAPI y Docker.
-
-### 🎯 Características Principales
-
-- ✅ **Análisis Exploratorio de Datos (EDA)** completo
-- ✅ **4 Modelos de ML**: Random Forest, XGBoost, CatBoost, LightGBM
-- ✅ **Optimización de hiperparámetros** con GridSearchCV
-- ✅ **Interpretabilidad** con LIME
-- ✅ **API REST** con FastAPI
-- ✅ **Containerización** con Docker
-- ✅ **CI/CD** con GitHub Actions
-- ✅ **Tests unitarios** con pytest
-
----
-
-## 📊 Dataset
+## Dataset
 
 **Telco Customer Churn** de Kaggle
 - **Tamaño**: ~7,000 registros
@@ -43,7 +41,7 @@ Proyecto completo de **Machine Learning** y **MLOps** para predecir el abandono 
 
 ---
 
-## 🏗️ Estructura del Proyecto
+## Estructura del Proyecto
 
 ```
 Telco-Customer-Churn-Mlops/
@@ -53,7 +51,7 @@ Telco-Customer-Churn-Mlops/
 │   ├── model.joblib
 │   └── __init__.py
 ├── data/                          # Datasets originales y limpios
-├── notebooks/                     # Notebooks originales (no modificar)
+├── notebooks/                     # Notebooks 
 │   ├── 1_eda_preprocessing.ipynb
 │   ├── 2_model_training.ipynb
 │   └── 3_interpretability.ipynb
@@ -75,7 +73,7 @@ Telco-Customer-Churn-Mlops/
 
 ---
 
-## 🚀 Instalación y Ejecución
+## Instalación y Ejecución
 
 ### Prerrequisitos
 
@@ -137,7 +135,7 @@ La API estará disponible en:
 
 ---
 
-## 🐳 Docker
+## Docker
 
 ### Construir la Imagen
 
@@ -172,7 +170,7 @@ curl http://localhost:8000/health
 
 ---
 
-## 📡 Uso de la API
+## Uso de la API
 
 ### Endpoints Disponibles
 
@@ -260,7 +258,7 @@ print(response.json())
 
 ---
 
-## 🧪 Tests
+## Tests
 
 ### Ejecutar Tests Unitarios
 
@@ -274,71 +272,19 @@ pytest tests/ --cov=app --cov-report=html
 # Ver reporte de cobertura
 # Abrir htmlcov/index.html en el navegador
 ```
-
-### Tests Incluidos
-
-- ✅ Test de endpoints principales
-- ✅ Test de validación de datos
-- ✅ Test de respuestas de error
-- ✅ Test de predicción batch
-- ✅ Test de categorización de riesgo
-
 ---
 
-## 📈 Resultados del Modelo
-
-### Métricas de Evaluación
-
-| Modelo | Accuracy | Precision | Recall | F1-Score | ROC-AUC |
-|--------|----------|-----------|--------|----------|---------|
-| Random Forest | 0.80 | 0.68 | 0.52 | 0.59 | 0.84 |
-| XGBoost | 0.81 | 0.70 | 0.54 | 0.61 | 0.85 |
-| CatBoost | 0.81 | 0.69 | 0.55 | 0.61 | 0.85 |
-| LightGBM | 0.80 | 0.68 | 0.53 | 0.60 | 0.84 |
-
-*Los valores exactos varían según la ejecución de GridSearchCV*
-
-### Variables Más Importantes
-
-1. **tenure** (Antigüedad del cliente)
-2. **Contract** (Tipo de contrato)
-3. **MonthlyCharges** (Cargo mensual)
-4. **TotalCharges** (Cargos totales)
-5. **PaymentMethod** (Método de pago)
-
----
-
-## 🔍 Insights de Negocio
-
-### Factores de Alto Riesgo de Churn
-
-- 🔴 Contrato mes-a-mes (42% churn rate)
-- 🔴 Clientes nuevos (tenure < 12 meses)
-- 🔴 Pago con cheque electrónico (45% churn rate)
-- 🔴 Sin servicios adicionales (OnlineSecurity, TechSupport)
-- 🔴 Cargos mensuales altos (> $70)
-
-### Recomendaciones de Retención
-
-1. **Incentivar contratos de largo plazo** → Reducción estimada de churn: 30%
-2. **Promover pagos automáticos** → Reducción estimada de churn: 15%
-3. **Ofrecer servicios adicionales gratuitos** (3-6 meses) → Aumenta retención
-4. **Programa de onboarding** para nuevos clientes
-5. **Revisión de precios** para clientes de alto valor
-
----
-
-## 🔄 CI/CD Pipeline
+## CI/CD Pipeline
 
 ### GitHub Actions
 
 El proyecto incluye un pipeline automatizado que:
 
-1. ✅ **Lint**: Verifica calidad del código con Flake8
-2. ✅ **Test**: Ejecuta tests unitarios con pytest
-3. ✅ **Build**: Construye imagen Docker
-4. ✅ **Test Container**: Verifica que el contenedor funcione
-5. ✅ **Deploy**: Placeholder para despliegue a producción
+1. **Lint**: Verifica calidad del código con Flake8
+2. **Test**: Ejecuta tests unitarios con pytest
+3. **Build**: Construye imagen Docker
+4. **Test Container**: Verifica que el contenedor funcione
+5. **Deploy**: Placeholder para despliegue a producción
 
 ### Configuración
 
@@ -352,11 +298,11 @@ Para usar el pipeline en tu repositorio:
 
 ---
 
-## 📖 Documentación
+## Documentación
 
 La documentación completa del proyecto está disponible como Jupyter Book en GitHub Pages:
 
-👉 **[Ver Documentación Completa](https://mrspain2104.github.io/Telco-Customer-Churn-Mlops/)**
+**[Ver Documentación Completa](https://mrspain2104.github.io/Telco-Customer-Churn-Mlops/)**
 
 La documentación incluye:
 - Presentación del proyecto y equipo
@@ -375,32 +321,7 @@ jupyter-book build jupyter-book
 
 ---
 
-## �📊 Monitoreo (Recomendaciones)
-
-### Deriva de Datos
-
-Monitorear cambios en la distribución de:
-- Distribución de tenure
-- Distribución de MonthlyCharges
-- Proporción de tipos de contrato
-
-### Métricas de Producción
-
-- **Latencia** de predicciones (< 100ms objetivo)
-- **Throughput** (predicciones por segundo)
-- **Tasa de error** de la API
-- **Disponibilidad** del servicio (99.9% objetivo)
-
-### Herramientas Sugeridas
-
-- **Prometheus + Grafana**: Métricas y dashboards
-- **ELK Stack**: Logs centralizados
-- **MLflow**: Tracking de experimentos
-- **Evidently AI**: Monitoreo de deriva de datos
-
----
-
-## 🛠️ Tecnologías Utilizadas
+## Tecnologías Utilizadas
 
 ### Data Science & ML
 - Python 3.10
@@ -426,46 +347,16 @@ Monitorear cambios en la distribución de:
 
 ---
 
-## 📝 To-Do List
-
-- [ ] Implementar autenticación en la API (JWT)
-- [ ] Agregar monitoreo con Prometheus
-- [ ] Implementar versionado de modelos
-- [ ] Agregar A/B testing de modelos
-- [ ] Crear dashboard de métricas en tiempo real
-- [ ] Implementar reentrenamiento automático
-- [ ] Agregar más tests (integración, carga)
-
----
-
-## 🤝 Contribuciones
-
-Las contribuciones son bienvenidas! Por favor:
-
-1. Fork el proyecto
-2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
-
----
-
-## 📄 Licencia
-
-Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
-
----
-
-## 👥 Autores
+## Autores
 
 **Universidad del Norte - Curso de Machine Learning**
 
-- **Omar Medina** - Análisis y Modelado
-- **Andrés España** - MLOps e Implementación
+- **Omar Medina**
+- **Andrés España**
 
 ---
 
-## 📧 Contacto
+## Contacto
 
 **Repositorio:** [GitHub - Telco Customer Churn MLOps](https://github.com/MrSpain2104/Telco-Customer-Churn-Mlops)
 
@@ -475,16 +366,7 @@ Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más det
 
 ---
 
-## 🙏 Agradecimientos
-
-- Dataset de Kaggle: [Telco Customer Churn](https://www.kaggle.com/blastchar/telco-customer-churn)
-- Comunidad de FastAPI
-- Comunidad de scikit-learn
-- Tutoriales y recursos de MLOps
-
----
-
-## 📚 Referencias
+## Referencias
 
 - [FastAPI Documentation](https://fastapi.tiangolo.com/)
 - [scikit-learn User Guide](https://scikit-learn.org/stable/user_guide.html)

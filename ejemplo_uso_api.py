@@ -6,9 +6,7 @@ import json
 API_URL = "http://localhost:8001"
 
 # Ejemplo 1: Cliente con ALTO riesgo de churn
-print("\n" + "="*80)
 print("EJEMPLO 1: Cliente con ALTO RIESGO de Churn")
-print("="*80)
 
 cliente_alto_riesgo = {
     "gender": "Male",
@@ -42,9 +40,7 @@ print(f"   Nivel de Riesgo: {resultado['risk_level']}")
 print(f"   Confianza: {resultado['confidence']:.2%}")
 
 # Ejemplo 2: Cliente con BAJO riesgo de churn
-print("\n" + "="*80)
 print("EJEMPLO 2: Cliente con BAJO RIESGO de Churn")
-print("="*80)
 
 cliente_bajo_riesgo = {
     "gender": "Female",
@@ -78,9 +74,7 @@ print(f"   Nivel de Riesgo: {resultado['risk_level']}")
 print(f"   Confianza: {resultado['confidence']:.2%}")
 
 # Ejemplo 3: Predicción por lotes (múltiples clientes)
-print("\n" + "="*80)
 print("EJEMPLO 3: Predicción por Lotes (Batch)")
-print("="*80)
 
 clientes_lote = [cliente_alto_riesgo, cliente_bajo_riesgo]
 
@@ -95,9 +89,7 @@ for i, pred in enumerate(resultados['predictions'], 1):
     print(f"      Riesgo: {pred['risk_level']}")
 
 # Ejemplo 4: Información del modelo
-print("\n" + "="*80)
 print("EJEMPLO 4: Información del Modelo")
-print("="*80)
 
 response = requests.get(f"{API_URL}/model-info")
 info = response.json()

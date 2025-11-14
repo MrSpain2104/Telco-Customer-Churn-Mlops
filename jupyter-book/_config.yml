@@ -1,7 +1,7 @@
 # Book settings
 title: "Telco Customer Churn - MLOps Project"
 author: "Omar Medina & Andrés España"
-logo: ""
+logo: "logo.png"
 copyright: "2025"
 
 # Force re-execution of notebooks on each build.
@@ -28,7 +28,7 @@ repository:
 
 # Add GitHub buttons to your book
 html:
-  favicon: ""
+  favicon: "logo.png"
   use_edit_page_button: false
   use_repository_button: true
   use_issues_button: true
